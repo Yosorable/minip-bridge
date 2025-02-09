@@ -3,19 +3,19 @@ import { AppInfo, MResponse, MResponseWithData } from "../model";
 
 export function closeApp(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: closeApp.name,
+    api: "closeApp",
   });
 }
 
 export function showAppDetail(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: showAppDetail.name,
+    api: "showAppDetail",
   });
 }
 
 export function installApp(url: string): Promise<MResponse> {
   return jsBridge.callNative({
-    api: installApp.name,
+    api: "installApp",
     data: {
       url,
     },
@@ -24,6 +24,6 @@ export function installApp(url: string): Promise<MResponse> {
 
 export function getInstalledAppList(): Promise<MResponseWithData<AppInfo>> {
   return jsBridge.callNative({
-    api: getInstalledAppList.name,
+    api: "getInstalledAppList",
   });
 }

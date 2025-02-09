@@ -10,7 +10,7 @@ import {
 
 export function setNavigationBarTitle(title: string): Promise<MResponse> {
   return jsBridge.callNative({
-    api: setNavigationBarTitle.name,
+    api: "setNavigationBarTitle",
     data: {
       title,
     },
@@ -23,7 +23,7 @@ export function setNavigationBarColor(config: {
   animated?: boolean;
 }): Promise<MResponse> {
   return jsBridge.callNative({
-    api: setNavigationBarColor.name,
+    api: "setNavigationBarColor",
     data: config,
   });
 }
@@ -32,13 +32,13 @@ export function setNavigationBarColor(config: {
 
 export function enablePullDownRefresh(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: enablePullDownRefresh.name,
+    api: "enablePullDownRefresh",
   });
 }
 
 export function disablePullDownRefresh(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: disablePullDownRefresh.name,
+    api: "disablePullDownRefresh",
   });
 }
 
@@ -48,13 +48,13 @@ export function onPullDownRefresh(callback: (e: Event) => any) {
 
 export function startPullDownRefresh(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: startPullDownRefresh.name,
+    api: "startPullDownRefresh",
   });
 }
 
 export function stopPullDownRefresh(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: stopPullDownRefresh.name,
+    api: "stopPullDownRefresh",
   });
 }
 
@@ -62,14 +62,14 @@ export function stopPullDownRefresh(): Promise<MResponse> {
 
 export function showHUD(req: ShowHUDRequest): Promise<MResponse> {
   return jsBridge.callNative({
-    api: showHUD.name,
+    api: "showHUD",
     data: req,
   });
 }
 
 export function hideHUD(): Promise<MResponse> {
   return jsBridge.callNative({
-    api: hideHUD.name,
+    api: "hideHUD",
   });
 }
 
@@ -78,7 +78,7 @@ export function showAlert(
   config: AlertConfig,
 ): Promise<MResponseWithData<string>> {
   return jsBridge.callNative({
-    api: showAlert.name,
+    api: "showAlert",
     data: config,
   });
 }
@@ -86,7 +86,7 @@ export function showAlert(
 // media
 export function previewImage(url: string): Promise<MResponse> {
   return jsBridge.callNative({
-    api: previewImage.name,
+    api: "previewImage",
     data: {
       url,
     },
@@ -95,7 +95,7 @@ export function previewImage(url: string): Promise<MResponse> {
 
 export function previewVideo(url: string): Promise<MResponse> {
   return jsBridge.callNative({
-    api: previewVideo.name,
+    api: "previewVideo",
     data: {
       url,
     },

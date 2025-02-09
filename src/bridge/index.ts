@@ -33,10 +33,11 @@ if (
         .postMessage(JSON.stringify(req))
         .then((res) => JSON.parse(res))
         .then((res) => {
-          if (res.code && res.code === MResponseStatusCode.SUCCESS) {
+          if (res.code === MResponseStatusCode.SUCCESS) {
             return res;
+          } else {
+            throw new Error(res.msg ?? "Unknown error, res: ");
           }
-          throw new Error(res.msg ?? "Unknown error");
         });
     },
     callNativeSync(req) {

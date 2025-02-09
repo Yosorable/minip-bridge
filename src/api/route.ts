@@ -6,14 +6,14 @@ export function navigateTo(data: {
   title: string;
 }): Promise<MResponse> {
   return jsBridge.callNative({
-    api: navigateTo.name,
+    api: "navigateTo",
     data: data,
   });
 }
 
 export function navigateBack(delta: number = 1): Promise<MResponse> {
   return jsBridge.callNative({
-    api: navigateBack.name,
+    api: "navigateBack",
     data: {
       delta,
     },
@@ -25,14 +25,14 @@ export function redirectTo(data: {
   title: string;
 }): Promise<MResponse> {
   return jsBridge.callNative({
-    api: redirectTo.name,
+    api: "redirectTo",
     data: data,
   });
 }
 
 export function openWebsite(url: string): Promise<MResponse> {
   return jsBridge.callNative({
-    api: openWebsite.name,
+    api: "openWebsite",
     data: { url },
   });
 }

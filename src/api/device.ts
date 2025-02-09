@@ -9,7 +9,7 @@ export function vibrate(
   type?: "light" | "medium" | "heavy",
 ): Promise<MResponse> {
   return jsBridge.callNative({
-    api: vibrate.name,
+    api: "vibrate",
     data: {
       type,
     },
@@ -18,7 +18,7 @@ export function vibrate(
 
 export function getClipboardData(): Promise<MResponseWithData<string>> {
   return jsBridge.callNative({
-    api: getClipboardData.name,
+    api: "getClipboardData",
   });
 }
 
@@ -26,7 +26,7 @@ export function setClipboardData(
   data: string,
 ): Promise<MResponseWithData<string>> {
   return jsBridge.callNative({
-    api: setClipboardData.name,
+    api: "setClipboardData",
     data: {
       data,
     },
