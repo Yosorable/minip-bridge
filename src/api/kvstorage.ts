@@ -3,7 +3,7 @@ import { MResponse, MResponseWithData } from "../model";
 
 // async methods
 
-export function getKVStorage(key: string): Promise<MResponseWithData<String>> {
+export function getKVStorage(key: string): Promise<MResponseWithData<string>> {
   return jsBridge.callNative({
     api: "getKVStorage",
     data: { key },
@@ -32,7 +32,7 @@ export function clearKVStorage(): Promise<MResponse> {
 
 // sync methods
 
-export function getKVStorageSync(key: string): MResponseWithData<String> {
+export function getKVStorageSync(key: string): MResponseWithData<string> {
   return jsBridge.callNativeSync({
     api: "getKVStorageSync",
     data: { key },

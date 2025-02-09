@@ -22,7 +22,7 @@ export function installApp(url: string): Promise<MResponse> {
   });
 }
 
-export function getInstalledAppList(): Promise<MResponseWithData<AppInfo>> {
+export function getInstalledAppList(): Promise<MResponseWithData<AppInfo[]>> {
   return jsBridge.callNative({
     api: "getInstalledAppList",
   });
