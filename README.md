@@ -6,6 +6,11 @@
 npm i minip-bridge
 ```
 
+```JavaScript
+import {navigateTo} from "minip-bridge"
+navigateTo({page: "index.html", title: "title"})
+```
+
 ## directly use in html/js file
 
 ```html
