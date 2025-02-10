@@ -1,6 +1,6 @@
 # minip-bridge
 
-## install
+## Install with npm
 
 ```bash
 npm i minip-bridge
@@ -11,7 +11,7 @@ import {navigateTo} from "minip-bridge"
 navigateTo({page: "index.html", title: "title"})
 ```
 
-## directly use in html/js file
+## Directly use in html/js file
 
 ```html
 <script>
