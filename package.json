@@ -1,7 +1,7 @@
 {
   "name": "minip-bridge",
   "version": "1.0.0",
-  "description": "",
+  "description": "minip webview bridge",
   "main": "index.ts",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -9,12 +9,16 @@
     "build": "tsup"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "yosorable",
+  "license": "MIT",
   "devDependencies": {
     "eslint": "^9.19.0",
     "prettier": "^3.4.2",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yosorable/minip-bridge"
   }
 }
