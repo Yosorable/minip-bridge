@@ -3,7 +3,7 @@ import { MResponse } from "../model";
 
 export function navigateTo(data: {
   page: string;
-  title: string;
+  title?: string;
 }): Promise<MResponse> {
   return jsBridge.callNative({
     api: "navigateTo",
@@ -22,7 +22,7 @@ export function navigateBack(delta: number = 1): Promise<MResponse> {
 
 export function redirectTo(data: {
   page: string;
-  title: string;
+  title?: string;
 }): Promise<MResponse> {
   return jsBridge.callNative({
     api: "redirectTo",

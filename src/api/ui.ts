@@ -20,7 +20,6 @@ export function setNavigationBarTitle(title: string): Promise<MResponse> {
 export function setNavigationBarColor(config: {
   foregroundColor: string;
   backgroundColor: string;
-  animated?: boolean;
 }): Promise<MResponse> {
   return jsBridge.callNative({
     api: "setNavigationBarColor",
