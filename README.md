@@ -1,5 +1,11 @@
 # minip-bridge
 
+## install
+
+```bash
+npm i minip-bridge
+```
+
 ## directly use in html/js file
 
 ```html
