@@ -14,7 +14,7 @@ navigateTo({page: "index.html", title: "title"})
 ## Directly use in html/js file
 
 ```html
-<script>
+<script type="module">
   import(
     "https://cdn.jsdelivr.net/gh/yosorable/minip-bridge@main/dist/index.mjs"
   ).then((minip) => {
