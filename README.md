@@ -25,11 +25,9 @@ navigateTo({page: "index.html", title: "title"})
 
 ```html
 <script type="module">
-  import(
-    "https://cdn.jsdelivr.net/gh/yosorable/minip-bridge@main/dist/index.mjs"
-  ).then((minip) => {
-    console.log(minip);
-    console.log(minip.navigateTo);
-  });
+  import * as minip from "https://cdn.jsdelivr.net/gh/yosorable/minip-bridge@main/dist/index.mjs";
+
+  console.log(minip);
+  console.log(minip.navigateTo);
 </script>
 ```
