@@ -1,12 +1,18 @@
-export type HUDType = "success" | "error" | "progress" | "label";
+export type HUDType = "success" | "error" | "progress" | "banner";
+
+/**
+ * @param title works only in banner type,
+ * otherwise it will be concatenated with the message parameter using "\n"
+ * @param delay ms, doesn't work in banner and progress type
+ * @param interaction enable or disable hud background mask, default value is true (hide mask),
+ * doesn't work in banner type
+ */
 export interface ShowHUDRequest {
-  type?: HUDType;
+  type: HUDType;
   title?: string;
-  subTitle?: string;
-  /**
-   * ms
-   */
+  message?: string;
   delay?: number;
+  interaction?: boolean;
 }
 
 /**
