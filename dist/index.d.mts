@@ -146,9 +146,9 @@ declare function hideHUD(): Promise<MResponse>;
 declare function showAlert(config: AlertConfig): Promise<MResponseWithData<string>>;
 declare function previewImage(url: string): Promise<MResponse>;
 declare function previewVideo(url: string): Promise<MResponse>;
-declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<MResponseWithData<number | null>>;
-declare function showPicker(type: "multipleColumns", data: MultipleColumnsPickerConfig): Promise<MResponseWithData<number[] | null>>;
-declare function showPicker(type: "date" | "time", data: DateAndTimePickerConfig): Promise<MResponseWithData<string | null>>;
+declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<MResponseWithData<number | null | undefined>>;
+declare function showPicker(type: "multipleColumns", data: MultipleColumnsPickerConfig): Promise<MResponseWithData<number[] | null | undefined>>;
+declare function showPicker(type: "date" | "time", data: DateAndTimePickerConfig): Promise<MResponseWithData<string | null | undefined>>;
 
 declare function getKVStorage(key: string): Promise<MResponseWithData<string>>;
 declare function setKVStorage(key: string, value: string): Promise<MResponse>;

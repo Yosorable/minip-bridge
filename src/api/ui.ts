@@ -108,15 +108,15 @@ export function previewVideo(url: string): Promise<MResponse> {
 export function showPicker(
   type: "singleColumn",
   data: SingleColumnPickerConfig,
-): Promise<MResponseWithData<number | null>>;
+): Promise<MResponseWithData<number | null | undefined>>;
 export function showPicker(
   type: "multipleColumns",
   data: MultipleColumnsPickerConfig,
-): Promise<MResponseWithData<number[] | null>>;
+): Promise<MResponseWithData<number[] | null | undefined>>;
 export function showPicker(
   type: "date" | "time",
   data: DateAndTimePickerConfig,
-): Promise<MResponseWithData<string | null>>;
+): Promise<MResponseWithData<string | null | undefined>>;
 
 export function showPicker(
   type: "singleColumn" | "multipleColumns" | "date" | "time",
@@ -124,7 +124,7 @@ export function showPicker(
     | SingleColumnPickerConfig
     | MultipleColumnsPickerConfig
     | DateAndTimePickerConfig,
-): Promise<MResponseWithData<number | number[] | string | null>> {
+): Promise<MResponseWithData<number | number[] | string | null | undefined>> {
   return jsBridge.callNative({
     api: "showPicker",
     data: { type, data },
