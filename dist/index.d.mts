@@ -28,6 +28,23 @@ interface AlertConfig {
     preferredStyle?: "alert" | "actionSheet";
     actions: AlertAction[];
 }
+interface SingleColumnPickerConfig {
+    index: number;
+    column: string[];
+}
+interface MultipleColumnsPickerConfig {
+    index: number[];
+    columns: string[][];
+}
+/**
+ * @param dateFormat datetime format string, like: "yyyy-MM-dd", "HH:mm"
+ */
+interface DateAndTimePickerConfig {
+    start?: string;
+    end?: string;
+    value?: string;
+    dateFormat: string;
+}
 
 interface MRequestBase {
     /**
@@ -129,6 +146,9 @@ declare function hideHUD(): Promise<MResponse>;
 declare function showAlert(config: AlertConfig): Promise<MResponseWithData<string>>;
 declare function previewImage(url: string): Promise<MResponse>;
 declare function previewVideo(url: string): Promise<MResponse>;
+declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<MResponseWithData<number | null>>;
+declare function showPicker(type: "multipleColumns", data: MultipleColumnsPickerConfig): Promise<MResponseWithData<number[] | null>>;
+declare function showPicker(type: "date" | "time", data: DateAndTimePickerConfig): Promise<MResponseWithData<string | null>>;
 
 declare function getKVStorage(key: string): Promise<MResponseWithData<string>>;
 declare function setKVStorage(key: string, value: string): Promise<MResponse>;
@@ -160,4 +180,4 @@ declare global {
     }
 }
 
-export { type AlertAction, type AlertConfig, type AppInfo, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type ShowHUDRequest, clearKVStorage, clearKVStorageSync, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getInstalledAppList, getKVStorage, getKVStorageSync, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openWebsite, previewImage, previewVideo, redirectTo, setClipboardData, setKVStorage, setKVStorageSync, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, startPullDownRefresh, stopPullDownRefresh, vibrate };
+export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MultipleColumnsPickerConfig, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getInstalledAppList, getKVStorage, getKVStorageSync, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openWebsite, previewImage, previewVideo, redirectTo, setClipboardData, setKVStorage, setKVStorageSync, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };

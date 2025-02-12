@@ -1,9 +1,12 @@
 import jsBridge from "../bridge";
 import {
   AlertConfig,
+  DateAndTimePickerConfig,
   MResponse,
   MResponseWithData,
+  MultipleColumnsPickerConfig,
   ShowHUDRequest,
+  SingleColumnPickerConfig,
 } from "../model";
 
 // navigation bar
@@ -98,5 +101,32 @@ export function previewVideo(url: string): Promise<MResponse> {
     data: {
       url,
     },
+  });
+}
+
+// picker
+export function showPicker(
+  type: "singleColumn",
+  data: SingleColumnPickerConfig,
+): Promise<MResponseWithData<number | null>>;
+export function showPicker(
+  type: "multipleColumns",
+  data: MultipleColumnsPickerConfig,
+): Promise<MResponseWithData<number[] | null>>;
+export function showPicker(
+  type: "date" | "time",
+  data: DateAndTimePickerConfig,
+): Promise<MResponseWithData<string | null>>;
+
+export function showPicker(
+  type: "singleColumn" | "multipleColumns" | "date" | "time",
+  data:
+    | SingleColumnPickerConfig
+    | MultipleColumnsPickerConfig
+    | DateAndTimePickerConfig,
+): Promise<MResponseWithData<number | number[] | string | null>> {
+  return jsBridge.callNative({
+    api: "showPicker",
+    data: { type, data },
   });
 }

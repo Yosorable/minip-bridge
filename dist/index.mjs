@@ -171,6 +171,12 @@ function previewVideo(url) {
     }
   });
 }
+function showPicker(type, data) {
+  return bridge_default.callNative({
+    api: "showPicker",
+    data: { type, data }
+  });
+}
 
 // src/api/kvstorage.ts
 function getKVStorage(key) {
@@ -272,6 +278,7 @@ export {
   showAlert,
   showAppDetail,
   showHUD,
+  showPicker,
   startPullDownRefresh,
   stopPullDownRefresh,
   vibrate

@@ -30,3 +30,23 @@ export interface AlertConfig {
   preferredStyle?: "alert" | "actionSheet";
   actions: AlertAction[];
 }
+
+export interface SingleColumnPickerConfig {
+  index: number;
+  column: string[];
+}
+
+export interface MultipleColumnsPickerConfig {
+  index: number[];
+  columns: string[][];
+}
+
+/**
+ * @param dateFormat datetime format string, like: "yyyy-MM-dd", "HH:mm"
+ */
+export interface DateAndTimePickerConfig {
+  start?: string;
+  end?: string;
+  value?: string;
+  dateFormat: string;
+}
