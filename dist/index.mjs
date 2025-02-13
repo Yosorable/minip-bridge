@@ -248,6 +248,9 @@ function setClipboardData(data) {
     }
   });
 }
+function scanQRCode() {
+  return bridge_default.callNative({ api: "scanQRCode" });
+}
 export {
   MResponseStatusCode,
   clearKVStorage,
@@ -270,6 +273,7 @@ export {
   previewImage,
   previewVideo,
   redirectTo,
+  scanQRCode,
   setClipboardData,
   setKVStorage,
   setKVStorageSync,

@@ -32,3 +32,9 @@ export function setClipboardData(
     },
   });
 }
+
+export function scanQRCode(): Promise<
+  MResponseWithData<string | undefined | null>
+> {
+  return jsBridge.callNative({ api: "scanQRCode" });
+}
