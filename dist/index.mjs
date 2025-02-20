@@ -74,6 +74,11 @@ function openWebsite(url) {
     data: { url }
   });
 }
+function openSettings() {
+  return bridge_default.callNative({
+    api: "openSettings"
+  });
+}
 
 // src/api/app.ts
 function closeApp() {
@@ -269,6 +274,7 @@ export {
   navigateBack,
   navigateTo,
   onPullDownRefresh,
+  openSettings,
   openWebsite,
   previewImage,
   previewVideo,

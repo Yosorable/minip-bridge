@@ -36,3 +36,9 @@ export function openWebsite(url: string): Promise<MResponse> {
     data: { url },
   });
 }
+
+export function openSettings(): Promise<MResponse> {
+  return jsBridge.callNative({
+    api: "openSettings",
+  });
+}
