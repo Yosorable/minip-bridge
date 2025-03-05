@@ -160,6 +160,24 @@ declare function setKVStorageSync(key: string, value: string): MResponse;
 declare function deleteKVStorageSync(key: string): MResponse;
 declare function clearKVStorageSync(): MResponse;
 
+interface DeviceInfo {
+    language: string;
+    model: string;
+    system: string;
+    screen: ScreenInfo;
+    safeAreaInfo: SafeAreaInfo;
+}
+interface ScreenInfo {
+    width: number;
+    height: number;
+}
+interface SafeAreaInfo {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+}
+
 /**
  *
  * @param type medium as default
@@ -168,6 +186,8 @@ declare function vibrate(type?: "light" | "medium" | "heavy"): Promise<MResponse
 declare function getClipboardData(): Promise<MResponseWithData<string>>;
 declare function setClipboardData(data: string): Promise<MResponseWithData<string>>;
 declare function scanQRCode(): Promise<MResponseWithData<string | undefined | null>>;
+declare function getDeviceInfo(): Promise<DeviceInfo>;
+declare function getDeviceInfoSync(): MResponseWithData<DeviceInfo>;
 
 interface Callable {
     postMessage: (data: string) => Promise<string>;
@@ -182,4 +202,4 @@ declare global {
     }
 }
 
-export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MultipleColumnsPickerConfig, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getInstalledAppList, getKVStorage, getKVStorageSync, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openWebsite, previewImage, previewVideo, redirectTo, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };
+export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MultipleColumnsPickerConfig, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openWebsite, previewImage, previewVideo, redirectTo, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };

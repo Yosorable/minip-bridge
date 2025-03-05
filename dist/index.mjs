@@ -256,6 +256,12 @@ function setClipboardData(data) {
 function scanQRCode() {
   return bridge_default.callNative({ api: "scanQRCode" });
 }
+function getDeviceInfo() {
+  return bridge_default.callNative({ api: "getDeviceInfo" });
+}
+function getDeviceInfoSync() {
+  return bridge_default.callNativeSync({ api: "getDeviceInfo" });
+}
 export {
   MResponseStatusCode,
   clearKVStorage,
@@ -266,6 +272,8 @@ export {
   disablePullDownRefresh,
   enablePullDownRefresh,
   getClipboardData,
+  getDeviceInfo,
+  getDeviceInfoSync,
   getInstalledAppList,
   getKVStorage,
   getKVStorageSync,

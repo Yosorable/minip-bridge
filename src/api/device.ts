@@ -1,5 +1,6 @@
 import jsBridge from "../bridge";
 import { MResponse, MResponseWithData } from "../model";
+import { DeviceInfo } from "../model/deviceinfo";
 
 /**
  *
@@ -37,4 +38,12 @@ export function scanQRCode(): Promise<
   MResponseWithData<string | undefined | null>
 > {
   return jsBridge.callNative({ api: "scanQRCode" });
+}
+
+export function getDeviceInfo(): Promise<DeviceInfo> {
+  return jsBridge.callNative({ api: "getDeviceInfo" });
+}
+
+export function getDeviceInfoSync(): MResponseWithData<DeviceInfo> {
+  return jsBridge.callNativeSync({ api: "getDeviceInfo" });
 }
