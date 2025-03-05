@@ -40,7 +40,7 @@ export function scanQRCode(): Promise<
   return jsBridge.callNative({ api: "scanQRCode" });
 }
 
-export function getDeviceInfo(): Promise<DeviceInfo> {
+export function getDeviceInfo(): Promise<MResponseWithData<DeviceInfo>> {
   return jsBridge.callNative({ api: "getDeviceInfo" });
 }
 

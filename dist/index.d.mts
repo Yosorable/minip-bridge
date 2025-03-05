@@ -186,7 +186,7 @@ declare function vibrate(type?: "light" | "medium" | "heavy"): Promise<MResponse
 declare function getClipboardData(): Promise<MResponseWithData<string>>;
 declare function setClipboardData(data: string): Promise<MResponseWithData<string>>;
 declare function scanQRCode(): Promise<MResponseWithData<string | undefined | null>>;
-declare function getDeviceInfo(): Promise<DeviceInfo>;
+declare function getDeviceInfo(): Promise<MResponseWithData<DeviceInfo>>;
 declare function getDeviceInfoSync(): MResponseWithData<DeviceInfo>;
 
 interface Callable {
