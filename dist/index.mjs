@@ -260,7 +260,7 @@ function getDeviceInfo() {
   return bridge_default.callNative({ api: "getDeviceInfo" });
 }
 function getDeviceInfoSync() {
-  return bridge_default.callNativeSync({ api: "getDeviceInfo" });
+  return bridge_default.callNativeSync({ api: "getDeviceInfoSync" });
 }
 export {
   MResponseStatusCode,

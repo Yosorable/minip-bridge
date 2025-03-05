@@ -45,5 +45,5 @@ export function getDeviceInfo(): Promise<DeviceInfo> {
 }
 
 export function getDeviceInfoSync(): MResponseWithData<DeviceInfo> {
-  return jsBridge.callNativeSync({ api: "getDeviceInfo" });
+  return jsBridge.callNativeSync({ api: "getDeviceInfoSync" });
 }
