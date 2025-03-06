@@ -42,11 +42,11 @@ export interface MultipleColumnsPickerConfig {
 }
 
 /**
- * @param dateFormat datetime format string, like: "yyyy-MM-dd", "HH:mm"
+ * @param dateFormat datetime format string, like: "yyyy-MM-dd", "HH:mm:ss"
  */
 export interface DateAndTimePickerConfig {
   start?: string;
   end?: string;
   value?: string;
-  dateFormat: string;
+  dateFormat?: string;
 }

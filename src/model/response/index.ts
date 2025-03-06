@@ -13,8 +13,11 @@ export interface MResponse {
    * Error msg or other info.
    */
   msg?: string;
+
+  isSuccess(): boolean;
 }
 
 export interface MResponseWithData<T> extends MResponse {
   data: T;
+  hasData(): boolean;
 }

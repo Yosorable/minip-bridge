@@ -12,7 +12,7 @@ export function vibrate(
   return jsBridge.callNative({
     api: "vibrate",
     data: {
-      type,
+      type: type ?? "medium",
     },
   });
 }

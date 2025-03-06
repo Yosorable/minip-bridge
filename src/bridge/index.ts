@@ -34,6 +34,9 @@ if (
         .then((res) => JSON.parse(res))
         .then((res) => {
           if (res.code === MResponseStatusCode.SUCCESS) {
+            res.isSuccess = () => true;
+            const hashData = res.data !== null && res.data !== undefined;
+            res.hasData = () => hashData;
             return res;
           } else {
             throw new Error(res.msg ?? "Unknown error, res: ");
@@ -43,11 +46,17 @@ if (
     callNativeSync(req) {
       const res = prompt(JSON.stringify(req));
       if (res) {
-        return JSON.parse(res);
+        const r = JSON.parse(res);
+        r.isSuccess = () => true;
+        const hashData = r.data !== null && r.data !== undefined;
+        r.hasData = () => hashData;
+        return r;
       }
       return {
         code: MResponseStatusCode.FAILED,
         msg: "Unknown error",
+        isSuccess: () => false,
+        hasData: () => false,
       };
     },
   };

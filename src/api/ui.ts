@@ -125,8 +125,26 @@ export function showPicker(
     | MultipleColumnsPickerConfig
     | DateAndTimePickerConfig,
 ): Promise<MResponseWithData<number | number[] | string | null | undefined>> {
-  return jsBridge.callNative({
-    api: "showPicker",
-    data: { type, data },
-  });
+  let res;
+  if (
+    (type === "time" || type === "date") &&
+    !(data as DateAndTimePickerConfig).dateFormat
+  ) {
+    res = jsBridge.callNative({
+      api: "showPicker",
+      data: {
+        type,
+        data: {
+          ...data,
+          dateFormat: type === "date" ? "yyyy-MM-dd" : "HH:mm:ss",
+        },
+      },
+    });
+  } else {
+    res = jsBridge.callNative({
+      api: "showPicker",
+      data: { type, data },
+    });
+  }
+  return res;
 }

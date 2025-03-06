@@ -13,6 +13,9 @@ if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandl
     callNative(req) {
       return _callNative.postMessage(JSON.stringify(req)).then((res) => JSON.parse(res)).then((res) => {
         if (res.code === 0 /* SUCCESS */) {
+          res.isSuccess = () => true;
+          const hashData = res.data !== null && res.data !== void 0;
+          res.hasData = () => hashData;
           return res;
         } else {
           throw new Error(res.msg ?? "Unknown error, res: ");
@@ -22,11 +25,17 @@ if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandl
     callNativeSync(req) {
       const res = prompt(JSON.stringify(req));
       if (res) {
-        return JSON.parse(res);
+        const r = JSON.parse(res);
+        r.isSuccess = () => true;
+        const hashData = r.data !== null && r.data !== void 0;
+        r.hasData = () => hashData;
+        return r;
       }
       return {
         code: 7 /* FAILED */,
-        msg: "Unknown error"
+        msg: "Unknown error",
+        isSuccess: () => false,
+        hasData: () => false
       };
     }
   };
@@ -177,10 +186,25 @@ function previewVideo(url) {
   });
 }
 function showPicker(type, data) {
-  return bridge_default.callNative({
-    api: "showPicker",
-    data: { type, data }
-  });
+  let res;
+  if ((type === "time" || type === "date") && !data.dateFormat) {
+    res = bridge_default.callNative({
+      api: "showPicker",
+      data: {
+        type,
+        data: {
+          ...data,
+          dateFormat: type === "date" ? "yyyy-MM-dd" : "HH:mm:ss"
+        }
+      }
+    });
+  } else {
+    res = bridge_default.callNative({
+      api: "showPicker",
+      data: { type, data }
+    });
+  }
+  return res;
 }
 
 // src/api/kvstorage.ts
@@ -236,7 +260,7 @@ function vibrate(type) {
   return bridge_default.callNative({
     api: "vibrate",
     data: {
-      type
+      type: type ?? "medium"
     }
   });
 }
