@@ -194,27 +194,11 @@ declare function getDeviceInfoSync(): MResponseWithData<DeviceInfo>;
 interface WebKitCallable {
     postMessage: (data: string) => Promise<string>;
 }
-interface WebView2Callable {
-    callNative: (data: string) => Promise<string>;
-}
-interface WebView2SyncCallable {
-    callNativeSync: (data: string) => string;
-}
 declare global {
     interface Window {
         webkit?: {
             messageHandlers?: {
                 MinipNativeInteraction?: WebKitCallable;
-            };
-        };
-        chrome?: {
-            webview?: {
-                hostObjects?: {
-                    sync?: {
-                        MinipNativeInteraction?: WebView2SyncCallable;
-                    };
-                    MinipNativeInteraction?: WebView2Callable;
-                };
             };
         };
     }

@@ -39,39 +39,6 @@ if (window.webkit?.messageHandlers?.MinipNativeInteraction) {
       };
     }
   };
-} else if (window.chrome?.webview?.hostObjects?.MinipNativeInteraction && window.chrome.webview.hostObjects.sync?.MinipNativeInteraction) {
-  const asyncObj = window.chrome?.webview?.hostObjects?.MinipNativeInteraction;
-  const syncObj = window.chrome?.webview?.hostObjects?.sync?.MinipNativeInteraction;
-  jsBridge = {
-    callNative(req) {
-      return asyncObj.callNative(JSON.stringify(req)).then((res) => JSON.parse(res)).then((res) => {
-        if (res.code === 0 /* SUCCESS */) {
-          res.isSuccess = () => true;
-          const hashData = res.data !== null && res.data !== void 0;
-          res.hasData = () => hashData;
-          return res;
-        } else {
-          throw new Error(res.msg ?? "Unknown error, res: ");
-        }
-      });
-    },
-    callNativeSync(req) {
-      const res = syncObj.callNativeSync(JSON.stringify(req));
-      if (res) {
-        const r = JSON.parse(res);
-        r.isSuccess = () => true;
-        const hashData = r.data !== null && r.data !== void 0;
-        r.hasData = () => hashData;
-        return r;
-      }
-      return {
-        code: 7 /* FAILED */,
-        msg: "Unknown error",
-        isSuccess: () => false,
-        hasData: () => false
-      };
-    }
-  };
 } else {
   jsBridge = {
     callNative() {
