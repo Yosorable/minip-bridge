@@ -7,7 +7,7 @@ var MResponseStatusCode = /* @__PURE__ */ ((MResponseStatusCode2) => {
 
 // src/bridge/index.ts
 var jsBridge;
-if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.MinipNativeInteraction) {
+if (window.webkit?.messageHandlers?.MinipNativeInteraction) {
   const _callNative = window.webkit.messageHandlers.MinipNativeInteraction;
   jsBridge = {
     callNative(req) {
@@ -24,6 +24,39 @@ if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandl
     },
     callNativeSync(req) {
       const res = prompt(JSON.stringify(req));
+      if (res) {
+        const r = JSON.parse(res);
+        r.isSuccess = () => true;
+        const hashData = r.data !== null && r.data !== void 0;
+        r.hasData = () => hashData;
+        return r;
+      }
+      return {
+        code: 7 /* FAILED */,
+        msg: "Unknown error",
+        isSuccess: () => false,
+        hasData: () => false
+      };
+    }
+  };
+} else if (window.chrome?.webview?.hostObjects?.MinipNativeInteraction && window.chrome.webview.hostObjects.sync?.MinipNativeInteraction) {
+  const _callNative = window.chrome?.webview?.hostObjects?.MinipNativeInteraction.callNative;
+  const _callNativSync = window.chrome?.webview?.hostObjects?.sync?.MinipNativeInteraction.callNativeSync;
+  jsBridge = {
+    callNative(req) {
+      return _callNative(JSON.stringify(req)).then((res) => JSON.parse(res)).then((res) => {
+        if (res.code === 0 /* SUCCESS */) {
+          res.isSuccess = () => true;
+          const hashData = res.data !== null && res.data !== void 0;
+          res.hasData = () => hashData;
+          return res;
+        } else {
+          throw new Error(res.msg ?? "Unknown error, res: ");
+        }
+      });
+    },
+    callNativeSync(req) {
+      const res = _callNativSync(JSON.stringify(req));
       if (res) {
         const r = JSON.parse(res);
         r.isSuccess = () => true;
