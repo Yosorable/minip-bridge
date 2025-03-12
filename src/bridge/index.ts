@@ -79,14 +79,13 @@ else if (
   window.chrome?.webview?.hostObjects?.MinipNativeInteraction &&
   window.chrome.webview.hostObjects.sync?.MinipNativeInteraction
 ) {
-  const _callNative =
-    window.chrome?.webview?.hostObjects?.MinipNativeInteraction.callNative;
-  const _callNativSync =
-    window.chrome?.webview?.hostObjects?.sync?.MinipNativeInteraction
-      .callNativeSync;
+  const asyncObj = window.chrome?.webview?.hostObjects?.MinipNativeInteraction;
+  const syncObj =
+    window.chrome?.webview?.hostObjects?.sync?.MinipNativeInteraction;
   jsBridge = {
     callNative(req) {
-      return _callNative(JSON.stringify(req))
+      return asyncObj
+        .callNative(JSON.stringify(req))
         .then((res) => JSON.parse(res))
         .then((res) => {
           if (res.code === MResponseStatusCode.SUCCESS) {
@@ -100,7 +99,7 @@ else if (
         });
     },
     callNativeSync(req) {
-      const res = _callNativSync(JSON.stringify(req));
+      const res = syncObj.callNativeSync(JSON.stringify(req));
       if (res) {
         const r = JSON.parse(res);
         r.isSuccess = () => true;
