@@ -286,6 +286,220 @@ function getDeviceInfo() {
 function getDeviceInfoSync() {
   return bridge_default.callNativeSync({ api: "getDeviceInfoSync" });
 }
+
+// src/api/sqlite/index.ts
+import { Kysely as Kysely2, Migrator } from "kysely";
+
+// src/api/sqlite/core/sqlite-native-api.ts
+function sqliteOpenDB(path) {
+  return bridge_default.callNative({
+    api: "sqliteOpenDB",
+    data: {
+      path
+    }
+  });
+}
+function sqliteCloseDB(dbKey) {
+  return bridge_default.callNative({
+    api: "sqliteCloseDB",
+    data: {
+      dbKey
+    }
+  });
+}
+function sqlitePrepare(dbKey, sql) {
+  return bridge_default.callNative({
+    api: "sqlitePrepare",
+    data: {
+      dbKey,
+      sql
+    }
+  });
+}
+function sqliteStatementAll(dbKey, stmtKey, parameters) {
+  return bridge_default.callNative({
+    api: "sqliteStatementAll",
+    data: {
+      dbKey,
+      stmtKey,
+      parameters
+    }
+  });
+}
+function sqliteStatementRun(dbKey, stmtKey, parameters) {
+  return bridge_default.callNative({
+    api: "sqliteStatementRun",
+    data: {
+      dbKey,
+      stmtKey,
+      parameters
+    }
+  });
+}
+
+// src/api/sqlite/core/sqlite-database.ts
+var MinipSqliteDatabase = class {
+  path;
+  id;
+  debug;
+  constructor(path, debug) {
+    this.path = path;
+    this.id = -1;
+    this.debug = debug;
+  }
+  async close() {
+    if (this.id === -1) return;
+    await sqliteCloseDB(this.id);
+  }
+  async prepare(sql) {
+    if (this.id === -1) {
+      const res = await sqliteOpenDB(this.path);
+      this.id = res.data.dbKey;
+    }
+    const dbKey = this.id;
+    const stmtRes = await sqlitePrepare(dbKey, sql);
+    const stmtKey = stmtRes.data.stmtKey;
+    const reader = stmtRes.data.reader;
+    return {
+      reader,
+      all(parameters) {
+        return sqliteStatementAll(dbKey, stmtKey, parameters).then(
+          (res) => res.data
+        );
+      },
+      run(parameters) {
+        return sqliteStatementRun(dbKey, stmtKey, parameters).then(
+          (res) => res.data
+        );
+      },
+      iterate(parameters) {
+        throw "Not implemented";
+      }
+    };
+  }
+};
+
+// src/api/sqlite/core/sqlite-dialect.ts
+import {
+  SqliteAdapter,
+  SqliteIntrospector,
+  SqliteQueryCompiler
+} from "kysely";
+
+// src/api/sqlite/core/sqlite-driver.ts
+import {
+  CompiledQuery
+} from "kysely";
+
+// src/api/sqlite/core/sqlite-connection.ts
+var MinipSqliteConnection = class {
+  #db;
+  constructor(db) {
+    this.#db = db;
+  }
+  async executeQuery(compiledQuery) {
+    const { sql, parameters } = compiledQuery;
+    if (this.#db.debug) {
+      console.debug(sql, parameters);
+    }
+    const stmt = await this.#db.prepare(sql);
+    if (stmt.reader) {
+      return {
+        rows: await stmt.all(parameters)
+      };
+    } else {
+      const { changes, lastInsertRowid } = await stmt.run(parameters);
+      const numAffectedRows = changes !== void 0 && changes !== null ? BigInt(changes) : void 0;
+      return {
+        numUpdatedOrDeletedRows: numAffectedRows,
+        numAffectedRows,
+        insertId: lastInsertRowid !== void 0 && lastInsertRowid !== null ? BigInt(lastInsertRowid) : void 0,
+        rows: []
+      };
+    }
+  }
+  streamQuery(compiledQuery, chunkSize) {
+    throw new Error("Method not implemented.");
+  }
+};
+
+// src/api/sqlite/core/sqlite-driver.ts
+var MinipSqliteDriver = class {
+  #config;
+  #db;
+  #connection;
+  constructor(config) {
+    this.#config = config;
+  }
+  async init() {
+    this.#db = this.#config.database;
+    this.#connection = new MinipSqliteConnection(this.#db);
+    if (this.#config.onCreateConnection) {
+      await this.#config.onCreateConnection(this.#connection);
+    }
+  }
+  async acquireConnection() {
+    return this.#connection;
+  }
+  async beginTransaction(connection, settings) {
+    await connection.executeQuery(CompiledQuery.raw("begin"));
+  }
+  async commitTransaction(connection) {
+    await connection.executeQuery(CompiledQuery.raw("commit"));
+  }
+  async rollbackTransaction(connection) {
+    await connection.executeQuery(CompiledQuery.raw("rollback"));
+  }
+  async releaseConnection(connection) {
+  }
+  async destroy() {
+    this.#db?.close();
+  }
+};
+
+// src/api/sqlite/core/sqlite-dialect.ts
+var MinipSqliteDialect = class {
+  #config;
+  constructor(config) {
+    this.#config = config;
+  }
+  createDriver() {
+    return new MinipSqliteDriver(this.#config);
+  }
+  createQueryCompiler() {
+    return new SqliteQueryCompiler();
+  }
+  createAdapter() {
+    return new SqliteAdapter();
+  }
+  createIntrospector(db) {
+    return new SqliteIntrospector(db);
+  }
+};
+
+// src/api/sqlite/index.ts
+function openSqliteDB(props) {
+  const dialect = new MinipSqliteDialect({
+    database: new MinipSqliteDatabase(props.path, props.debug ?? false)
+  });
+  const db = new Kysely2({
+    dialect
+  });
+  if (props.migratorProps) {
+    const migrator = new Migrator({
+      db,
+      ...props.migratorProps
+    });
+    return {
+      db,
+      migrator
+    };
+  }
+  return { db };
+}
+
+// src/index.ts
+export * from "kysely";
 export {
   MResponseStatusCode,
   clearKVStorage,
@@ -307,6 +521,7 @@ export {
   navigateTo,
   onPullDownRefresh,
   openSettings,
+  openSqliteDB,
   openWebsite,
   previewImage,
   previewVideo,
