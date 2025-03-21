@@ -209,6 +209,12 @@ declare function openSqliteDB<T>(props: OpenSqliteDBProps): {
     migrator?: undefined;
 };
 
+declare function getMemoryStorage(key: string): Promise<MResponseWithData<string>>;
+declare function setMemoryStorage(key: string, value: string): Promise<MResponse>;
+declare function setMemoryStorageIfNotExist(key: string, value: string): Promise<MResponseWithData<boolean>>;
+declare function removeMemoryStorage(key: string): Promise<MResponse>;
+declare function clearMemoryStorage(): Promise<MResponse>;
+
 interface WebKitCallable {
     postMessage: (data: string) => Promise<string>;
 }
@@ -222,4 +228,4 @@ declare global {
     }
 }
 
-export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MinipSqliteMigratorProps, type MultipleColumnsPickerConfig, type OpenSqliteDBProps, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openSqliteDB, openWebsite, previewImage, previewVideo, redirectTo, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };
+export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MinipSqliteMigratorProps, type MultipleColumnsPickerConfig, type OpenSqliteDBProps, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openSqliteDB, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };
