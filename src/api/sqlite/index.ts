@@ -10,6 +10,22 @@ export interface OpenSqliteDBProps {
   migratorProps?: MinipSqliteMigratorProps;
 }
 
+export interface OpenSqliteDBWithMigrationProps extends OpenSqliteDBProps {}
+
+export function openSqliteDB<T>(props: {
+  path: string;
+  debug?: boolean;
+}): Kysely<T>;
+
+export function openSqliteDB<T>(props: {
+  path: string;
+  debug?: boolean;
+  migratorProps: MinipSqliteMigratorProps;
+}): {
+  db: Kysely<T>;
+  migrator: Migrator;
+};
+
 export function openSqliteDB<T>(props: OpenSqliteDBProps) {
   const dialect = new MinipSqliteDialect({
     database: new MinipSqliteDatabase(props.path, props.debug ?? false),
@@ -29,5 +45,5 @@ export function openSqliteDB<T>(props: OpenSqliteDBProps) {
     };
   }
 
-  return { db };
+  return db;
 }

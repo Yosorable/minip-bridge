@@ -201,13 +201,23 @@ interface OpenSqliteDBProps {
     debug?: boolean;
     migratorProps?: MinipSqliteMigratorProps;
 }
-declare function openSqliteDB<T>(props: OpenSqliteDBProps): {
+interface OpenSqliteDBWithMigrationProps extends OpenSqliteDBProps {
+}
+declare function openSqliteDB<T>(props: {
+    path: string;
+    debug?: boolean;
+}): Kysely<T>;
+declare function openSqliteDB<T>(props: {
+    path: string;
+    debug?: boolean;
+    migratorProps: MinipSqliteMigratorProps;
+}): {
     db: Kysely<T>;
     migrator: Migrator;
-} | {
-    db: Kysely<T>;
-    migrator?: undefined;
 };
+declare function openSqliteDB2<T>({ path }: {
+    path: string;
+}): Kysely<T>;
 
 declare function getMemoryStorage(key: string): Promise<MResponseWithData<string>>;
 declare function setMemoryStorage(key: string, value: string): Promise<MResponse>;
@@ -228,4 +238,4 @@ declare global {
     }
 }
 
-export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MinipSqliteMigratorProps, type MultipleColumnsPickerConfig, type OpenSqliteDBProps, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openSqliteDB, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };
+export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MinipSqliteMigratorProps, type MultipleColumnsPickerConfig, type OpenSqliteDBProps, type OpenSqliteDBWithMigrationProps, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openSqliteDB, openSqliteDB2, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };

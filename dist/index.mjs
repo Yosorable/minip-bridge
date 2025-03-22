@@ -570,7 +570,15 @@ function openSqliteDB(props) {
       migrator
     };
   }
-  return { db };
+  return db;
+}
+function openSqliteDB2({ path }) {
+  const dialect = new MinipSqliteDialect({
+    database: new MinipSqliteDatabase(path, false)
+  });
+  return new Kysely2({
+    dialect
+  });
 }
 
 // src/api/memory-cache.ts
@@ -630,6 +638,7 @@ export {
   onPullDownRefresh,
   openSettings,
   openSqliteDB,
+  openSqliteDB2,
   openWebsite,
   previewImage,
   previewVideo,
