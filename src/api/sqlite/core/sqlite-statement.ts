@@ -5,7 +5,5 @@ export interface MinipSqliteStatement {
     changes: number | bigint;
     lastInsertRowid: number | bigint;
   }>;
-  iterate(
-    parameters: ReadonlyArray<unknown>,
-  ): Promise<IterableIterator<unknown>>;
+  iterate(parameters: ReadonlyArray<unknown>): AsyncIterableIterator<unknown>;
 }

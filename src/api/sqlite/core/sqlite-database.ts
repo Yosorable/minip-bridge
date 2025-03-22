@@ -6,6 +6,7 @@ import {
   sqliteStatementAll,
   sqliteStatementRun,
 } from "../native-api";
+import { MinipSQLiteQueryIterator } from "./sqlite-query-iterator";
 
 export class MinipSqliteDatabase {
   path: string;
@@ -45,7 +46,7 @@ export class MinipSqliteDatabase {
         );
       },
       iterate(parameters) {
-        throw "Not implemented";
+        return new MinipSQLiteQueryIterator(dbKey, stmtKey, parameters);
       },
     };
   }

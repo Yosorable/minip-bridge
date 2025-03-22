@@ -92,3 +92,44 @@ export function sqliteExecute(
     },
   });
 }
+
+export function sqliteCreateIterator(
+  dbKey: number,
+  stmtKey: number,
+  parameters: ReadonlyArray<unknown>,
+): Promise<MResponse> {
+  return jsBridge.callNative({
+    api: "sqliteCreateIterator",
+    data: {
+      dbKey,
+      stmtKey,
+      parameters,
+    },
+  });
+}
+
+export function sqliteIteratorNext(
+  dbKey: number,
+  stmtKey: number,
+): Promise<MResponseWithData<unknown | undefined>> {
+  return jsBridge.callNative({
+    api: "sqliteIteratorNext",
+    data: {
+      dbKey,
+      stmtKey,
+    },
+  });
+}
+
+export function sqliteIteratorRelease(
+  dbKey: number,
+  stmtKey: number,
+): Promise<MResponse> {
+  return jsBridge.callNative({
+    api: "sqliteIteratorRelease",
+    data: {
+      dbKey,
+      stmtKey,
+    },
+  });
+}

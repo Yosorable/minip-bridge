@@ -336,6 +336,65 @@ function sqliteStatementRun(dbKey, stmtKey, parameters) {
     }
   });
 }
+function sqliteCreateIterator(dbKey, stmtKey, parameters) {
+  return bridge_default.callNative({
+    api: "sqliteCreateIterator",
+    data: {
+      dbKey,
+      stmtKey,
+      parameters
+    }
+  });
+}
+function sqliteIteratorNext(dbKey, stmtKey) {
+  return bridge_default.callNative({
+    api: "sqliteIteratorNext",
+    data: {
+      dbKey,
+      stmtKey
+    }
+  });
+}
+function sqliteIteratorRelease(dbKey, stmtKey) {
+  return bridge_default.callNative({
+    api: "sqliteIteratorRelease",
+    data: {
+      dbKey,
+      stmtKey
+    }
+  });
+}
+
+// src/api/sqlite/core/sqlite-query-iterator.ts
+var MinipSQLiteQueryIterator = class {
+  dbKey;
+  stmtKey;
+  parameters;
+  created = false;
+  constructor(dbKey, stmtKey, parameters) {
+    this.dbKey = dbKey;
+    this.stmtKey = stmtKey;
+    this.parameters = parameters;
+  }
+  async next() {
+    if (!this.created) {
+      await sqliteCreateIterator(this.dbKey, this.stmtKey, this.parameters);
+      this.created = true;
+    }
+    const res = await sqliteIteratorNext(this.dbKey, this.stmtKey);
+    if (res.hasData()) return { value: res.data, done: false };
+    return { value: void 0, done: true };
+  }
+  async return() {
+    if (this.created) {
+      await sqliteIteratorRelease(this.dbKey, this.stmtKey);
+    }
+    return { value: void 0, done: true };
+  }
+  [Symbol.asyncIterator]() {
+    return this;
+  }
+};
 
 // src/api/sqlite/core/sqlite-database.ts
 var MinipSqliteDatabase = class {
@@ -373,7 +432,7 @@ var MinipSqliteDatabase = class {
         );
       },
       iterate(parameters) {
-        throw "Not implemented";
+        return new MinipSQLiteQueryIterator(dbKey, stmtKey, parameters);
       }
     };
   }
@@ -388,10 +447,13 @@ import {
 
 // src/api/sqlite/core/sqlite-driver.ts
 import {
-  CompiledQuery
+  CompiledQuery as CompiledQuery2
 } from "kysely";
 
 // src/api/sqlite/core/sqlite-connection.ts
+import {
+  SelectQueryNode
+} from "kysely";
 var MinipSqliteConnection = class {
   #db;
   constructor(db) {
@@ -418,8 +480,21 @@ var MinipSqliteConnection = class {
       };
     }
   }
-  streamQuery(compiledQuery, chunkSize) {
-    throw new Error("Method not implemented.");
+  async *streamQuery(compiledQuery, _chunkSize) {
+    const { sql, parameters, query } = compiledQuery;
+    const stmt = await this.#db.prepare(sql);
+    if (SelectQueryNode.is(query)) {
+      const iter = stmt.iterate(parameters);
+      for await (const row of iter) {
+        yield {
+          rows: [row]
+        };
+      }
+    } else {
+      throw new Error(
+        "Sqlite driver only supports streaming of select queries"
+      );
+    }
   }
 };
 
@@ -442,13 +517,13 @@ var MinipSqliteDriver = class {
     return this.#connection;
   }
   async beginTransaction(connection, settings) {
-    await connection.executeQuery(CompiledQuery.raw("begin"));
+    await connection.executeQuery(CompiledQuery2.raw("begin"));
   }
   async commitTransaction(connection) {
-    await connection.executeQuery(CompiledQuery.raw("commit"));
+    await connection.executeQuery(CompiledQuery2.raw("commit"));
   }
   async rollbackTransaction(connection) {
-    await connection.executeQuery(CompiledQuery.raw("rollback"));
+    await connection.executeQuery(CompiledQuery2.raw("rollback"));
   }
   async releaseConnection(connection) {
   }

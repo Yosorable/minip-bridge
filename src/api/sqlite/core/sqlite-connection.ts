@@ -1,4 +1,9 @@
-import { CompiledQuery, DatabaseConnection, QueryResult } from "kysely";
+import {
+  CompiledQuery,
+  DatabaseConnection,
+  QueryResult,
+  SelectQueryNode,
+} from "kysely";
 import { MinipSqliteDatabase } from "./sqlite-database";
 
 export class MinipSqliteConnection implements DatabaseConnection {
@@ -35,10 +40,23 @@ export class MinipSqliteConnection implements DatabaseConnection {
       };
     }
   }
-  streamQuery<R>(
+  async *streamQuery<R>(
     compiledQuery: CompiledQuery,
-    chunkSize?: number,
+    _chunkSize: number,
   ): AsyncIterableIterator<QueryResult<R>> {
-    throw new Error("Method not implemented.");
+    const { sql, parameters, query } = compiledQuery;
+    const stmt = await this.#db.prepare(sql);
+    if (SelectQueryNode.is(query)) {
+      const iter = stmt.iterate(parameters) as AsyncIterableIterator<R>;
+      for await (const row of iter) {
+        yield {
+          rows: [row],
+        };
+      }
+    } else {
+      throw new Error(
+        "Sqlite driver only supports streaming of select queries",
+      );
+    }
   }
 }
