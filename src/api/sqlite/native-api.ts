@@ -1,5 +1,5 @@
-import jsBridge from "../../../bridge";
-import { MResponse, MResponseWithData } from "../../../model";
+import jsBridge from "../../bridge";
+import { MResponse, MResponseWithData } from "../../model";
 
 export function sqliteOpenDB(
   path: string,
@@ -64,6 +64,30 @@ export function sqliteStatementRun(
     data: {
       dbKey,
       stmtKey,
+      parameters,
+    },
+  });
+}
+
+export function sqliteExecute(
+  dbKey: number,
+  sql: string,
+  parameters: ReadonlyArray<unknown>,
+): Promise<
+  MResponseWithData<{
+    reader: boolean;
+    runRes?: {
+      changes: number | bigint;
+      lastInsertRowid: number | bigint;
+    };
+    entityData?: unknown[];
+  }>
+> {
+  return jsBridge.callNative({
+    api: "sqliteExecute",
+    data: {
+      dbKey,
+      sql,
       parameters,
     },
   });

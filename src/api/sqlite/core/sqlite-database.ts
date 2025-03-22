@@ -5,7 +5,7 @@ import {
   sqlitePrepare,
   sqliteStatementAll,
   sqliteStatementRun,
-} from "./sqlite-native-api";
+} from "../native-api";
 
 export class MinipSqliteDatabase {
   path: string;

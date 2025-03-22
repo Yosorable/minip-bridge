@@ -1,6 +1,6 @@
 {
   "name": "minip-bridge",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "minip webview bridge",
   "main": "index.ts",
   "module": "./dist/index.mjs",
