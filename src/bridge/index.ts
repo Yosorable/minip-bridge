@@ -1,5 +1,5 @@
-import { MResponseStatusCode } from "../model";
-import { MRequest } from "../model/request";
+import { MResponseStatusCode } from "../types";
+import { MRequest } from "../types/request";
 
 interface WebKitCallable {
   postMessage: (data: string) => Promise<string>;

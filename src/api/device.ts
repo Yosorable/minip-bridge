@@ -1,6 +1,6 @@
 import jsBridge from "../bridge";
-import { MResponse, MResponseWithData } from "../model";
-import { DeviceInfo } from "../model/deviceinfo";
+import { MResponse, MResponseWithData } from "../types";
+import { DeviceInfo } from "../types/deviceinfo";
 
 /**
  *

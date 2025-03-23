@@ -2,7 +2,7 @@ import {
   sqliteCreateIterator,
   sqliteIteratorNext,
   sqliteIteratorRelease,
-} from "../native-api";
+} from "../../api/sqlite";
 
 export class MinipSQLiteQueryIterator
   implements AsyncIterableIterator<unknown>

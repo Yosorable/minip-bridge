@@ -1,60 +1,15 @@
-// src/model/response/index.ts
-var MResponseStatusCode = /* @__PURE__ */ ((MResponseStatusCode2) => {
-  MResponseStatusCode2[MResponseStatusCode2["SUCCESS"] = 0] = "SUCCESS";
-  MResponseStatusCode2[MResponseStatusCode2["FAILED"] = 7] = "FAILED";
-  return MResponseStatusCode2;
-})(MResponseStatusCode || {});
-
-// src/bridge/index.ts
-var jsBridge;
-if (window.webkit?.messageHandlers?.MinipNativeInteraction) {
-  const _callNative = window.webkit.messageHandlers.MinipNativeInteraction;
-  jsBridge = {
-    callNative(req) {
-      return _callNative.postMessage(JSON.stringify(req)).then((res) => JSON.parse(res)).then((res) => {
-        if (res.code === 0 /* SUCCESS */) {
-          res.isSuccess = () => true;
-          const hashData = res.data !== null && res.data !== void 0;
-          res.hasData = () => hashData;
-          return res;
-        } else {
-          throw new Error(res.msg ?? "Unknown error, res: ");
-        }
-      });
-    },
-    callNativeSync(req) {
-      const res = prompt(JSON.stringify(req));
-      if (res) {
-        const r = JSON.parse(res);
-        r.isSuccess = () => true;
-        const hashData = r.data !== null && r.data !== void 0;
-        r.hasData = () => hashData;
-        return r;
-      }
-      return {
-        code: 7 /* FAILED */,
-        msg: "Unknown error",
-        isSuccess: () => false,
-        hasData: () => false
-      };
-    }
-  };
-} else {
-  jsBridge = {
-    callNative() {
-      return new Promise((_, reject) => {
-        reject("Cannot find JavaScript Bridge!!!");
-      });
-    },
-    callNativeSync() {
-      return {
-        code: 7 /* FAILED */,
-        msg: "Cannot find JavaScript Bridge!!!"
-      };
-    }
-  };
-}
-var bridge_default = jsBridge;
+import {
+  bridge_default,
+  sqliteCloseDB,
+  sqliteCreateIterator,
+  sqliteExecute,
+  sqliteIteratorNext,
+  sqliteIteratorRelease,
+  sqliteOpenDB,
+  sqlitePrepare,
+  sqliteStatementAll,
+  sqliteStatementRun
+} from "./chunk-BHXED4CK.mjs";
 
 // src/api/route.ts
 function navigateTo(data) {
@@ -287,300 +242,6 @@ function getDeviceInfoSync() {
   return bridge_default.callNativeSync({ api: "getDeviceInfoSync" });
 }
 
-// src/api/sqlite/index.ts
-import { Kysely as Kysely2, Migrator } from "kysely";
-
-// src/api/sqlite/native-api.ts
-function sqliteOpenDB(path) {
-  return bridge_default.callNative({
-    api: "sqliteOpenDB",
-    data: {
-      path
-    }
-  });
-}
-function sqliteCloseDB(dbKey) {
-  return bridge_default.callNative({
-    api: "sqliteCloseDB",
-    data: {
-      dbKey
-    }
-  });
-}
-function sqlitePrepare(dbKey, sql) {
-  return bridge_default.callNative({
-    api: "sqlitePrepare",
-    data: {
-      dbKey,
-      sql
-    }
-  });
-}
-function sqliteStatementAll(dbKey, stmtKey, parameters) {
-  return bridge_default.callNative({
-    api: "sqliteStatementAll",
-    data: {
-      dbKey,
-      stmtKey,
-      parameters
-    }
-  });
-}
-function sqliteStatementRun(dbKey, stmtKey, parameters) {
-  return bridge_default.callNative({
-    api: "sqliteStatementRun",
-    data: {
-      dbKey,
-      stmtKey,
-      parameters
-    }
-  });
-}
-function sqliteCreateIterator(dbKey, stmtKey, parameters) {
-  return bridge_default.callNative({
-    api: "sqliteCreateIterator",
-    data: {
-      dbKey,
-      stmtKey,
-      parameters
-    }
-  });
-}
-function sqliteIteratorNext(dbKey, stmtKey) {
-  return bridge_default.callNative({
-    api: "sqliteIteratorNext",
-    data: {
-      dbKey,
-      stmtKey
-    }
-  });
-}
-function sqliteIteratorRelease(dbKey, stmtKey) {
-  return bridge_default.callNative({
-    api: "sqliteIteratorRelease",
-    data: {
-      dbKey,
-      stmtKey
-    }
-  });
-}
-
-// src/api/sqlite/core/sqlite-query-iterator.ts
-var MinipSQLiteQueryIterator = class {
-  dbKey;
-  stmtKey;
-  parameters;
-  created = false;
-  constructor(dbKey, stmtKey, parameters) {
-    this.dbKey = dbKey;
-    this.stmtKey = stmtKey;
-    this.parameters = parameters;
-  }
-  async next() {
-    if (!this.created) {
-      await sqliteCreateIterator(this.dbKey, this.stmtKey, this.parameters);
-      this.created = true;
-    }
-    const res = await sqliteIteratorNext(this.dbKey, this.stmtKey);
-    if (res.hasData()) return { value: res.data, done: false };
-    return { value: void 0, done: true };
-  }
-  async return() {
-    if (this.created) {
-      await sqliteIteratorRelease(this.dbKey, this.stmtKey);
-    }
-    return { value: void 0, done: true };
-  }
-  [Symbol.asyncIterator]() {
-    return this;
-  }
-};
-
-// src/api/sqlite/core/sqlite-database.ts
-var MinipSqliteDatabase = class {
-  path;
-  id;
-  debug;
-  constructor(path, debug) {
-    this.path = path;
-    this.id = -1;
-    this.debug = debug;
-  }
-  async close() {
-    if (this.id === -1) return;
-    await sqliteCloseDB(this.id);
-  }
-  async prepare(sql) {
-    if (this.id === -1) {
-      const res = await sqliteOpenDB(this.path);
-      this.id = res.data.dbKey;
-    }
-    const dbKey = this.id;
-    const stmtRes = await sqlitePrepare(dbKey, sql);
-    const stmtKey = stmtRes.data.stmtKey;
-    const reader = stmtRes.data.reader;
-    return {
-      reader,
-      all(parameters) {
-        return sqliteStatementAll(dbKey, stmtKey, parameters).then(
-          (res) => res.data
-        );
-      },
-      run(parameters) {
-        return sqliteStatementRun(dbKey, stmtKey, parameters).then(
-          (res) => res.data
-        );
-      },
-      iterate(parameters) {
-        return new MinipSQLiteQueryIterator(dbKey, stmtKey, parameters);
-      }
-    };
-  }
-};
-
-// src/api/sqlite/core/sqlite-dialect.ts
-import {
-  SqliteAdapter,
-  SqliteIntrospector,
-  SqliteQueryCompiler
-} from "kysely";
-
-// src/api/sqlite/core/sqlite-driver.ts
-import {
-  CompiledQuery as CompiledQuery2
-} from "kysely";
-
-// src/api/sqlite/core/sqlite-connection.ts
-import {
-  SelectQueryNode
-} from "kysely";
-var MinipSqliteConnection = class {
-  #db;
-  constructor(db) {
-    this.#db = db;
-  }
-  async executeQuery(compiledQuery) {
-    const { sql, parameters } = compiledQuery;
-    if (this.#db.debug) {
-      console.debug(sql, parameters);
-    }
-    const stmt = await this.#db.prepare(sql);
-    if (stmt.reader) {
-      return {
-        rows: await stmt.all(parameters)
-      };
-    } else {
-      const { changes, lastInsertRowid } = await stmt.run(parameters);
-      const numAffectedRows = changes !== void 0 && changes !== null ? BigInt(changes) : void 0;
-      return {
-        numUpdatedOrDeletedRows: numAffectedRows,
-        numAffectedRows,
-        insertId: lastInsertRowid !== void 0 && lastInsertRowid !== null ? BigInt(lastInsertRowid) : void 0,
-        rows: []
-      };
-    }
-  }
-  async *streamQuery(compiledQuery, _chunkSize) {
-    const { sql, parameters, query } = compiledQuery;
-    const stmt = await this.#db.prepare(sql);
-    if (SelectQueryNode.is(query)) {
-      const iter = stmt.iterate(parameters);
-      for await (const row of iter) {
-        yield {
-          rows: [row]
-        };
-      }
-    } else {
-      throw new Error(
-        "Sqlite driver only supports streaming of select queries"
-      );
-    }
-  }
-};
-
-// src/api/sqlite/core/sqlite-driver.ts
-var MinipSqliteDriver = class {
-  #config;
-  #db;
-  #connection;
-  constructor(config) {
-    this.#config = config;
-  }
-  async init() {
-    this.#db = this.#config.database;
-    this.#connection = new MinipSqliteConnection(this.#db);
-    if (this.#config.onCreateConnection) {
-      await this.#config.onCreateConnection(this.#connection);
-    }
-  }
-  async acquireConnection() {
-    return this.#connection;
-  }
-  async beginTransaction(connection, settings) {
-    await connection.executeQuery(CompiledQuery2.raw("begin"));
-  }
-  async commitTransaction(connection) {
-    await connection.executeQuery(CompiledQuery2.raw("commit"));
-  }
-  async rollbackTransaction(connection) {
-    await connection.executeQuery(CompiledQuery2.raw("rollback"));
-  }
-  async releaseConnection(connection) {
-  }
-  async destroy() {
-    this.#db?.close();
-  }
-};
-
-// src/api/sqlite/core/sqlite-dialect.ts
-var MinipSqliteDialect = class {
-  #config;
-  constructor(config) {
-    this.#config = config;
-  }
-  createDriver() {
-    return new MinipSqliteDriver(this.#config);
-  }
-  createQueryCompiler() {
-    return new SqliteQueryCompiler();
-  }
-  createAdapter() {
-    return new SqliteAdapter();
-  }
-  createIntrospector(db) {
-    return new SqliteIntrospector(db);
-  }
-};
-
-// src/api/sqlite/index.ts
-function openSqliteDB(props) {
-  const dialect = new MinipSqliteDialect({
-    database: new MinipSqliteDatabase(props.path, props.debug ?? false)
-  });
-  const db = new Kysely2({
-    dialect
-  });
-  if (props.migratorProps) {
-    const migrator = new Migrator({
-      db,
-      ...props.migratorProps
-    });
-    return {
-      db,
-      migrator
-    };
-  }
-  return db;
-}
-function openSqliteDB2({ path }) {
-  const dialect = new MinipSqliteDialect({
-    database: new MinipSqliteDatabase(path, false)
-  });
-  return new Kysely2({
-    dialect
-  });
-}
-
 // src/api/memory-cache.ts
 function getMemoryStorage(key) {
   return bridge_default.callNative({
@@ -611,11 +272,7 @@ function clearMemoryStorage() {
     api: "clearMemoryStorage"
   });
 }
-
-// src/index.ts
-export * from "kysely";
 export {
-  MResponseStatusCode,
   clearKVStorage,
   clearKVStorageSync,
   clearMemoryStorage,
@@ -637,8 +294,6 @@ export {
   navigateTo,
   onPullDownRefresh,
   openSettings,
-  openSqliteDB,
-  openSqliteDB2,
   openWebsite,
   previewImage,
   previewVideo,
@@ -656,6 +311,15 @@ export {
   showAppDetail,
   showHUD,
   showPicker,
+  sqliteCloseDB,
+  sqliteCreateIterator,
+  sqliteExecute,
+  sqliteIteratorNext,
+  sqliteIteratorRelease,
+  sqliteOpenDB,
+  sqlitePrepare,
+  sqliteStatementAll,
+  sqliteStatementRun,
   startPullDownRefresh,
   stopPullDownRefresh,
   vibrate

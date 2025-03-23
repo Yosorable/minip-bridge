@@ -1,6 +1,6 @@
 {
   "name": "minip-bridge",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "minip webview bridge",
   "main": "index.ts",
   "module": "./dist/index.mjs",
@@ -14,7 +14,7 @@
   "devDependencies": {
     "eslint": "^9.19.0",
     "prettier": "^3.4.2",
-    "tsup": "^8.3.6",
+    "tsup": "^8.4.0",
     "typescript": "^5.7.3"
   },
   "repository": {

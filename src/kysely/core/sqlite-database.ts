@@ -5,7 +5,7 @@ import {
   sqlitePrepare,
   sqliteStatementAll,
   sqliteStatementRun,
-} from "../native-api";
+} from "../../api/sqlite";
 import { MinipSQLiteQueryIterator } from "./sqlite-query-iterator";
 
 export class MinipSqliteDatabase {

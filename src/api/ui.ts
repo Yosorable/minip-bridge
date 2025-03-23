@@ -7,7 +7,7 @@ import {
   MultipleColumnsPickerConfig,
   ShowHUDRequest,
   SingleColumnPickerConfig,
-} from "../model";
+} from "../types";
 
 // navigation bar
 

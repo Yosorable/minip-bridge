@@ -1,5 +1,5 @@
 import jsBridge from "../bridge";
-import { MResponse } from "../model";
+import { MResponse } from "../types";
 
 export function navigateTo(data: {
   page: string;

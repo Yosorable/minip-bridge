@@ -1,5 +1,5 @@
 import jsBridge from "../bridge";
-import { AppInfo, MResponse, MResponseWithData } from "../model";
+import { AppInfo, MResponse, MResponseWithData } from "../types";
 
 export function closeApp(): Promise<MResponse> {
   return jsBridge.callNative({

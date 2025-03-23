@@ -1,5 +1,5 @@
-import jsBridge from "../../bridge";
-import { MResponse, MResponseWithData } from "../../model";
+import jsBridge from "../bridge";
+import { MResponse, MResponseWithData } from "../types";
 
 export function sqliteOpenDB(
   path: string,

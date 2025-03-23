@@ -1,6 +1,3 @@
-import { MigratorProps, Kysely, Migrator } from 'kysely';
-export * from 'kysely';
-
 type HUDType = "success" | "error" | "progress" | "banner";
 /**
  * @param title works only in banner type,
@@ -194,30 +191,30 @@ declare function scanQRCode(): Promise<MResponseWithData<string | undefined | nu
 declare function getDeviceInfo(): Promise<MResponseWithData<DeviceInfo>>;
 declare function getDeviceInfoSync(): MResponseWithData<DeviceInfo>;
 
-interface MinipSqliteMigratorProps extends Omit<MigratorProps, "db"> {
-}
-interface OpenSqliteDBProps {
-    path: string;
-    debug?: boolean;
-    migratorProps?: MinipSqliteMigratorProps;
-}
-interface OpenSqliteDBWithMigrationProps extends OpenSqliteDBProps {
-}
-declare function openSqliteDB<T>(props: {
-    path: string;
-    debug?: boolean;
-}): Kysely<T>;
-declare function openSqliteDB<T>(props: {
-    path: string;
-    debug?: boolean;
-    migratorProps: MinipSqliteMigratorProps;
-}): {
-    db: Kysely<T>;
-    migrator: Migrator;
-};
-declare function openSqliteDB2<T>({ path }: {
-    path: string;
-}): Kysely<T>;
+declare function sqliteOpenDB(path: string): Promise<MResponseWithData<{
+    dbKey: number;
+}>>;
+declare function sqliteCloseDB(dbKey: number): Promise<MResponse>;
+declare function sqlitePrepare(dbKey: number, sql: string): Promise<MResponseWithData<{
+    stmtKey: number;
+    reader: boolean;
+}>>;
+declare function sqliteStatementAll(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<MResponseWithData<unknown[]>>;
+declare function sqliteStatementRun(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<MResponseWithData<{
+    changes: number | bigint;
+    lastInsertRowid: number | bigint;
+}>>;
+declare function sqliteExecute(dbKey: number, sql: string, parameters: ReadonlyArray<unknown>): Promise<MResponseWithData<{
+    reader: boolean;
+    runRes?: {
+        changes: number | bigint;
+        lastInsertRowid: number | bigint;
+    };
+    entityData?: unknown[];
+}>>;
+declare function sqliteCreateIterator(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<MResponse>;
+declare function sqliteIteratorNext(dbKey: number, stmtKey: number): Promise<MResponseWithData<unknown | undefined>>;
+declare function sqliteIteratorRelease(dbKey: number, stmtKey: number): Promise<MResponse>;
 
 declare function getMemoryStorage(key: string): Promise<MResponseWithData<string>>;
 declare function setMemoryStorage(key: string, value: string): Promise<MResponse>;
@@ -238,4 +235,4 @@ declare global {
     }
 }
 
-export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MinipSqliteMigratorProps, type MultipleColumnsPickerConfig, type OpenSqliteDBProps, type OpenSqliteDBWithMigrationProps, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openSqliteDB, openSqliteDB2, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, startPullDownRefresh, stopPullDownRefresh, vibrate };
+export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MultipleColumnsPickerConfig, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, sqliteCloseDB, sqliteCreateIterator, sqliteExecute, sqliteIteratorNext, sqliteIteratorRelease, sqliteOpenDB, sqlitePrepare, sqliteStatementAll, sqliteStatementRun, startPullDownRefresh, stopPullDownRefresh, vibrate };

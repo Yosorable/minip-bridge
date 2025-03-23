@@ -2,31 +2,33 @@ import { Kysely, Migrator, MigratorProps } from "kysely";
 import { MinipSqliteDatabase } from "./core/sqlite-database";
 import { MinipSqliteDialect } from "./core/sqlite-dialect";
 
-export interface MinipSqliteMigratorProps extends Omit<MigratorProps, "db"> {}
+export interface MinipSqliteKyselyMigratorProps
+  extends Omit<MigratorProps, "db"> {}
 
-export interface OpenSqliteDBProps {
+export interface OpenSqliteKyselyDBProps {
   path: string;
   debug?: boolean;
-  migratorProps?: MinipSqliteMigratorProps;
+  migratorProps?: MinipSqliteKyselyMigratorProps;
 }
 
-export interface OpenSqliteDBWithMigrationProps extends OpenSqliteDBProps {}
+export interface OpenSqliteKyselyDBWithMigrationProps
+  extends OpenSqliteKyselyDBProps {}
 
-export function openSqliteDB<T>(props: {
+export function openSqliteKyselyDB<T>(props: {
   path: string;
   debug?: boolean;
 }): Kysely<T>;
 
-export function openSqliteDB<T>(props: {
+export function openSqliteKyselyDB<T>(props: {
   path: string;
   debug?: boolean;
-  migratorProps: MinipSqliteMigratorProps;
+  migratorProps: MinipSqliteKyselyMigratorProps;
 }): {
   db: Kysely<T>;
   migrator: Migrator;
 };
 
-export function openSqliteDB<T>(props: OpenSqliteDBProps) {
+export function openSqliteKyselyDB<T>(props: OpenSqliteKyselyDBProps) {
   const dialect = new MinipSqliteDialect({
     database: new MinipSqliteDatabase(props.path, props.debug ?? false),
   });
