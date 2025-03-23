@@ -24,22 +24,10 @@ navigateTo({page: "index.html", title: "title"})
 - Directly use in html/js file
 
 ```html
-<head>
-  <script type="importmap">
-    {
-      "imports": {
-        "minip-bridge": "https://cdn.jsdelivr.net/npm/minip-bridge/dist/index.mjs",
-        "kysely": "https://cdn.jsdelivr.net/npm/kysely/dist/esm/index.js"
-      }
-    }
-  </script>
-</head>
-<body>
-  <script type="module">
-    import * as minip from "minip-bridge";
+<script type="module">
+  import * as minip from "minip-bridge";
 
-    console.log(minip);
-    console.log(minip.navigateTo);
-  </script>
-</body>
+  console.log(minip);
+  console.log(minip.navigateTo);
+</script>
 ```
