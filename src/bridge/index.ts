@@ -42,17 +42,17 @@ if (window.webkit?.messageHandlers?.MinipNativeInteraction) {
       const res = prompt(JSON.stringify(req));
       if (res) {
         const r = JSON.parse(res);
-        r.isSuccess = () => true;
-        const hashData = r.data !== null && r.data !== undefined;
-        r.hasData = () => hashData;
-        return r;
+
+        if (r.code === MResponseStatusCode.SUCCESS) {
+          r.isSuccess = () => true;
+          const hashData = r.data !== null && r.data !== undefined;
+          r.hasData = () => hashData;
+          return r;
+        } else {
+          throw new Error(r.msg ?? "Unknown error, res: ");
+        }
       }
-      return {
-        code: MResponseStatusCode.FAILED,
-        msg: "Unknown error",
-        isSuccess: () => false,
-        hasData: () => false,
-      };
+      throw new Error("Unknown error");
     },
   };
 }
