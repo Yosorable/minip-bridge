@@ -1,53 +1,6 @@
-// src/bridge/index.ts
-var jsBridge;
-if (window.webkit?.messageHandlers?.MinipNativeInteraction) {
-  const _callNative = window.webkit.messageHandlers.MinipNativeInteraction;
-  jsBridge = {
-    callNative(req) {
-      return _callNative.postMessage(JSON.stringify(req)).then((res) => JSON.parse(res)).then((res) => {
-        if (res.code === 0 /* SUCCESS */) {
-          res.isSuccess = () => true;
-          const hashData = res.data !== null && res.data !== void 0;
-          res.hasData = () => hashData;
-          return res;
-        } else {
-          throw new Error(res.msg ?? "Unknown error, res: ");
-        }
-      });
-    },
-    callNativeSync(req) {
-      const res = prompt(JSON.stringify(req));
-      if (res) {
-        const r = JSON.parse(res);
-        r.isSuccess = () => true;
-        const hashData = r.data !== null && r.data !== void 0;
-        r.hasData = () => hashData;
-        return r;
-      }
-      return {
-        code: 7 /* FAILED */,
-        msg: "Unknown error",
-        isSuccess: () => false,
-        hasData: () => false
-      };
-    }
-  };
-} else {
-  jsBridge = {
-    callNative() {
-      return new Promise((_, reject) => {
-        reject("Cannot find JavaScript Bridge!!!");
-      });
-    },
-    callNativeSync() {
-      return {
-        code: 7 /* FAILED */,
-        msg: "Cannot find JavaScript Bridge!!!"
-      };
-    }
-  };
-}
-var bridge_default = jsBridge;
+import {
+  bridge_default
+} from "./chunk-HTON224K.mjs";
 
 // src/api/sqlite.ts
 function sqliteOpenDB(path) {
@@ -135,7 +88,6 @@ function sqliteIteratorRelease(dbKey, stmtKey) {
 }
 
 export {
-  bridge_default,
   sqliteOpenDB,
   sqliteCloseDB,
   sqlitePrepare,
@@ -146,4 +98,4 @@ export {
   sqliteIteratorNext,
   sqliteIteratorRelease
 };
-//# sourceMappingURL=chunk-BHXED4CK.mjs.map
+//# sourceMappingURL=chunk-FV4EP4UX.mjs.map

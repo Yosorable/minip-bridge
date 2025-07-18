@@ -1,5 +1,4 @@
 import {
-  bridge_default,
   sqliteCloseDB,
   sqliteCreateIterator,
   sqliteExecute,
@@ -9,7 +8,10 @@ import {
   sqlitePrepare,
   sqliteStatementAll,
   sqliteStatementRun
-} from "./chunk-BHXED4CK.mjs";
+} from "./chunk-FV4EP4UX.mjs";
+import {
+  bridge_default
+} from "./chunk-HTON224K.mjs";
 
 // src/api/route.ts
 function navigateTo(data) {

@@ -7,7 +7,8 @@ import {
   sqlitePrepare,
   sqliteStatementAll,
   sqliteStatementRun
-} from "../chunk-BHXED4CK.mjs";
+} from "../chunk-FV4EP4UX.mjs";
+import "../chunk-HTON224K.mjs";
 
 // src/kysely/index.ts
 import { Kysely as Kysely2, Migrator } from "kysely";
