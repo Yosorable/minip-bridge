@@ -1,6 +1,6 @@
 {
   "name": "minip-bridge",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "minip webview bridge",
   "main": "index.ts",
   "module": "./dist/index.mjs",
@@ -13,6 +13,10 @@
     "./kysely": {
       "import": "./dist/kysely/index.mjs",
       "types": "./dist/kysely/index.d.mts"
+    },
+    "./fs": {
+      "import": "./dist/fs/index.mjs",
+      "types": "./dist/fs/index.d.mts"
     }
   },
   "scripts": {
