@@ -8,10 +8,10 @@ import {
   sqlitePrepare,
   sqliteStatementAll,
   sqliteStatementRun
-} from "./chunk-FV4EP4UX.mjs";
+} from "./chunk-P6PQVD6M.mjs";
 import {
   bridge_default
-} from "./chunk-HTON224K.mjs";
+} from "./chunk-PRRQDQWO.mjs";
 
 // src/api/route.ts
 function navigateTo(data) {
