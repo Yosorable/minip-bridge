@@ -84,6 +84,7 @@ export async function stat(path: string) {
   file.atime = new Date(file.atimeMs);
   file.mtime = new Date(file.mtimeMs);
   file.ctime = new Date(file.ctimeMs);
+  file.birthtime = new Date(file.birthtimeMs);
 
   const S_IFDIR = 0o040000;
   const S_IFREG = 0o100000;

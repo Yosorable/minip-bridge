@@ -74,6 +74,7 @@ async function stat(path) {
   file.atime = new Date(file.atimeMs);
   file.mtime = new Date(file.mtimeMs);
   file.ctime = new Date(file.ctimeMs);
+  file.birthtime = new Date(file.birthtimeMs);
   const S_IFDIR = 16384;
   const S_IFREG = 32768;
   const S_IFLNK = 40960;
@@ -99,6 +100,7 @@ function statSync(path) {
   file.atime = new Date(file.atimeMs);
   file.mtime = new Date(file.mtimeMs);
   file.ctime = new Date(file.ctimeMs);
+  file.birthtime = new Date(file.birthtimeMs);
   const S_IFDIR = 16384;
   const S_IFREG = 32768;
   const S_IFLNK = 40960;
