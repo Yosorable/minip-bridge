@@ -5,6 +5,7 @@ import {
   MResponse,
   MResponseWithData,
   MultipleColumnsPickerConfig,
+  ShowAlertData,
   ShowHUDRequest,
   SingleColumnPickerConfig,
 } from "../types";
@@ -78,7 +79,7 @@ export function hideHUD(): Promise<MResponse> {
 // alert
 export function showAlert(
   config: AlertConfig,
-): Promise<MResponseWithData<string>> {
+): Promise<MResponseWithData<ShowAlertData>> {
   return jsBridge.callNative({
     api: "showAlert",
     data: config,

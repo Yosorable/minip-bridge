@@ -57,6 +57,11 @@ interface MRequestWithData<T> extends MRequestBase {
 }
 type MRequest<T> = MRequestBase | MRequestWithData<T>;
 
+interface ShowAlertData {
+    action: string;
+    inputs: Record<string, string>;
+}
+
 declare enum MResponseStatusCode {
     SUCCESS = 0,
     FAILED = 7
@@ -164,7 +169,7 @@ declare function startPullDownRefresh(): Promise<MResponse>;
 declare function stopPullDownRefresh(): Promise<MResponse>;
 declare function showHUD(req: ShowHUDRequest): Promise<MResponse>;
 declare function hideHUD(): Promise<MResponse>;
-declare function showAlert(config: AlertConfig): Promise<MResponseWithData<string>>;
+declare function showAlert(config: AlertConfig): Promise<MResponseWithData<ShowAlertData>>;
 declare function previewImage(url: string): Promise<MResponse>;
 declare function previewVideo(url: string): Promise<MResponse>;
 declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<MResponseWithData<number | null | undefined>>;
@@ -235,4 +240,4 @@ declare global {
     }
 }
 
-export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type DeviceInfo, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MultipleColumnsPickerConfig, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, sqliteCloseDB, sqliteCreateIterator, sqliteExecute, sqliteIteratorNext, sqliteIteratorRelease, sqliteOpenDB, sqlitePrepare, sqliteStatementAll, sqliteStatementRun, startPullDownRefresh, stopPullDownRefresh, vibrate };
+export { type AlertAction, type AlertConfig, type AppInfo, type DateAndTimePickerConfig, type DeviceInfo, type HUDType, type MRequest, type MRequestBase, type MRequestWithData, type MResponse, MResponseStatusCode, type MResponseWithData, type MultipleColumnsPickerConfig, type ShowAlertData, type ShowHUDRequest, type SingleColumnPickerConfig, clearKVStorage, clearKVStorageSync, clearMemoryStorage, closeApp, deleteKVStorage, deleteKVStorageSync, disablePullDownRefresh, enablePullDownRefresh, getClipboardData, getDeviceInfo, getDeviceInfoSync, getInstalledAppList, getKVStorage, getKVStorageSync, getMemoryStorage, hideHUD, installApp, navigateBack, navigateTo, onPullDownRefresh, openSettings, openWebsite, previewImage, previewVideo, redirectTo, removeMemoryStorage, scanQRCode, setClipboardData, setKVStorage, setKVStorageSync, setMemoryStorage, setMemoryStorageIfNotExist, setNavigationBarColor, setNavigationBarTitle, showAlert, showAppDetail, showHUD, showPicker, sqliteCloseDB, sqliteCreateIterator, sqliteExecute, sqliteIteratorNext, sqliteIteratorRelease, sqliteOpenDB, sqlitePrepare, sqliteStatementAll, sqliteStatementRun, startPullDownRefresh, stopPullDownRefresh, vibrate };

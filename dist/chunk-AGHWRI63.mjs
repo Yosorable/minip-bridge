@@ -1,6 +1,6 @@
 import {
   bridge_default
-} from "./chunk-PRRQDQWO.mjs";
+} from "./chunk-PKXNS7QU.mjs";
 
 // src/api/sqlite.ts
 function sqliteOpenDB(path) {
@@ -98,4 +98,4 @@ export {
   sqliteIteratorNext,
   sqliteIteratorRelease
 };
-//# sourceMappingURL=chunk-P6PQVD6M.mjs.map
+//# sourceMappingURL=chunk-AGHWRI63.mjs.map

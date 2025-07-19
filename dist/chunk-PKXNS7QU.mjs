@@ -51,4 +51,4 @@ var bridge_default = jsBridge;
 export {
   bridge_default
 };
-//# sourceMappingURL=chunk-PRRQDQWO.mjs.map
+//# sourceMappingURL=chunk-PKXNS7QU.mjs.map
