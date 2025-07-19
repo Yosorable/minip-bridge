@@ -70,7 +70,6 @@ export function renameSync(oldPath: string, newPath: string) {
   });
 }
 
-// todo: check !!!!!
 export async function stat(path: string) {
   const res = (await jsBridge.callNative({
     api: "fsStat",
