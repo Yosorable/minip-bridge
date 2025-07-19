@@ -15,6 +15,13 @@ export interface ShowHUDRequest {
   interaction?: boolean;
 }
 
+export interface AlertInput {
+  key: string;
+  title?: string;
+  type: "text" | "number" | "password";
+  defaultValue?: string
+}
+
 /**
  * @param title use key if not set
  * @param key callback arg
@@ -28,6 +35,7 @@ export interface AlertConfig {
   title?: string;
   message?: string;
   preferredStyle?: "alert" | "actionSheet";
+  inputs?: AlertInput[];
   actions: AlertAction[];
 }
 
