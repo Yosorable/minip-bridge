@@ -1,6 +1,6 @@
 import jsBridge from "../bridge";
 import { MResponseWithData } from "../types";
-import { FileStats } from "../types/FileStats";
+import { FileStats } from "../types/filestats";
 
 export async function access(path: string, mode?: number): Promise<void> {
   return jsBridge
