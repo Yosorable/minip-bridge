@@ -155,3 +155,25 @@ export function rmSync(path: string) {
     },
   });
 }
+
+export async function cp(src: string, dest: string, recursive?: boolean) {
+  await jsBridge.callNative({
+    api: "fsCp",
+    data: {
+      src,
+      dest,
+      recursive,
+    },
+  });
+}
+
+export function cpSync(src: string, dest: string, recursive?: boolean) {
+  jsBridge.callNativeSync({
+    api: "fsCpSync",
+    data: {
+      src,
+      dest,
+      recursive,
+    },
+  });
+}
