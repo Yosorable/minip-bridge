@@ -70,6 +70,19 @@ function getInstalledAppList() {
     api: "getInstalledAppList"
   });
 }
+function getAppInfo() {
+  return bridge_default.callNative({
+    api: "getAppInfo"
+  });
+}
+function updateCurrentApp(url) {
+  return bridge_default.callNative({
+    api: "updateCurrentApp",
+    data: {
+      url
+    }
+  });
+}
 
 // src/api/ui.ts
 function setNavigationBarTitle(title) {
@@ -283,6 +296,7 @@ export {
   deleteKVStorageSync,
   disablePullDownRefresh,
   enablePullDownRefresh,
+  getAppInfo,
   getClipboardData,
   getDeviceInfo,
   getDeviceInfoSync,
@@ -324,6 +338,7 @@ export {
   sqliteStatementRun,
   startPullDownRefresh,
   stopPullDownRefresh,
+  updateCurrentApp,
   vibrate
 };
 //# sourceMappingURL=index.mjs.map

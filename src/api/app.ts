@@ -27,3 +27,18 @@ export function getInstalledAppList(): Promise<MResponseWithData<AppInfo[]>> {
     api: "getInstalledAppList",
   });
 }
+
+export function getAppInfo(): Promise<MResponseWithData<AppInfo>> {
+  return jsBridge.callNative({
+    api: "getAppInfo",
+  });
+}
+
+export function updateCurrentApp(url: string): Promise<MResponse> {
+  return jsBridge.callNative({
+    api: "updateCurrentApp",
+    data: {
+      url,
+    },
+  });
+}
