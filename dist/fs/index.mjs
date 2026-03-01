@@ -1,6 +1,6 @@
 import {
   bridge_default
-} from "../chunk-PKXNS7QU.mjs";
+} from "../chunk-GXHJCCLG.mjs";
 
 // src/fs/common.ts
 async function access(path, mode) {

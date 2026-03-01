@@ -11,6 +11,7 @@ declare global {
         MinipNativeInteraction?: WebKitCallable;
       };
     };
+    __minipPreviewElement?: HTMLImageElement;
   }
 }
 

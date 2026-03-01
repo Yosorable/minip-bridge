@@ -180,13 +180,7 @@ declare function showHUD(req: ShowHUDRequest): Promise<MResponse>;
 declare function hideHUD(): Promise<MResponse>;
 declare function showAlert(config: AlertConfig): Promise<MResponseWithData<ShowAlertData>>;
 declare function previewImage(url: string, options?: {
-    rect?: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    };
-    onClose?: () => void;
+    sourceImage?: HTMLImageElement;
 }): Promise<MResponse>;
 declare function previewVideo(url: string): Promise<MResponse>;
 declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<MResponseWithData<number | null | undefined>>;
@@ -254,6 +248,7 @@ declare global {
                 MinipNativeInteraction?: WebKitCallable;
             };
         };
+        __minipPreviewElement?: HTMLImageElement;
     }
 }
 

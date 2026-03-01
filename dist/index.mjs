@@ -8,10 +8,10 @@ import {
   sqlitePrepare,
   sqliteStatementAll,
   sqliteStatementRun
-} from "./chunk-AGHWRI63.mjs";
+} from "./chunk-QWZNCALB.mjs";
 import {
   bridge_default
-} from "./chunk-PKXNS7QU.mjs";
+} from "./chunk-GXHJCCLG.mjs";
 
 // src/api/route.ts
 function navigateTo(data) {
@@ -140,9 +140,10 @@ function showAlert(config) {
   });
 }
 function previewImage(url, options) {
-  const { rect, onClose } = options || {};
-  if (onClose) {
-    window.addEventListener("previewImageClose", onClose, { once: true });
+  const img = options?.sourceImage;
+  const rect = options?.sourceImage?.getBoundingClientRect();
+  if (img != null) {
+    window.__minipPreviewElement = img;
   }
   return bridge_default.callNative({
     api: "previewImage",
