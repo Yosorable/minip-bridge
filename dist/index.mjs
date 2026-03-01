@@ -139,11 +139,16 @@ function showAlert(config) {
     data: config
   });
 }
-function previewImage(url) {
+function previewImage(url, options) {
+  const { rect, onClose } = options || {};
+  if (onClose) {
+    window.addEventListener("previewImageClose", onClose, { once: true });
+  }
   return bridge_default.callNative({
     api: "previewImage",
     data: {
-      url
+      url,
+      rect
     }
   });
 }

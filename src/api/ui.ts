@@ -87,11 +87,19 @@ export function showAlert(
 }
 
 // media
-export function previewImage(url: string): Promise<MResponse> {
+export function previewImage(url: string, options?: {
+  rect?: { x: number; y: number; width: number; height: number };
+  onClose?: () => void;
+}): Promise<MResponse> {
+  const { rect, onClose } = options || {};
+  if (onClose) {
+    window.addEventListener("previewImageClose", onClose, { once: true });
+  }
   return jsBridge.callNative({
     api: "previewImage",
     data: {
       url,
+      rect,
     },
   });
 }
