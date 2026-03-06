@@ -1,19 +1,18 @@
 import jsBridge from "../bridge";
-import { MResponse, MResponseWithData } from "../types";
+import { MResponseWithData } from "../types";
 
-export function sqliteOpenDB(
-  path: string,
-): Promise<MResponseWithData<{ dbKey: number }>> {
-  return jsBridge.callNative({
+export async function sqliteOpenDB(path: string): Promise<number> {
+  const res = await jsBridge.callNative({
     api: "sqliteOpenDB",
     data: {
       path,
     },
   });
+  return (res as MResponseWithData<{ dbKey: number }>).data.dbKey;
 }
 
-export function sqliteCloseDB(dbKey: number): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function sqliteCloseDB(dbKey: number): Promise<void> {
+  await jsBridge.callNative({
     api: "sqliteCloseDB",
     data: {
       dbKey,
@@ -21,25 +20,26 @@ export function sqliteCloseDB(dbKey: number): Promise<MResponse> {
   });
 }
 
-export function sqlitePrepare(
+export async function sqlitePrepare(
   dbKey: number,
   sql: string,
-): Promise<MResponseWithData<{ stmtKey: number; reader: boolean }>> {
-  return jsBridge.callNative({
+): Promise<{ stmtKey: number; reader: boolean }> {
+  const res = await jsBridge.callNative({
     api: "sqlitePrepare",
     data: {
       dbKey,
       sql,
     },
   });
+  return (res as MResponseWithData<{ stmtKey: number; reader: boolean }>).data;
 }
 
-export function sqliteStatementAll(
+export async function sqliteStatementAll(
   dbKey: number,
   stmtKey: number,
   parameters: ReadonlyArray<unknown>,
-): Promise<MResponseWithData<unknown[]>> {
-  return jsBridge.callNative({
+): Promise<unknown[]> {
+  const res = await jsBridge.callNative({
     api: "sqliteStatementAll",
     data: {
       dbKey,
@@ -47,19 +47,18 @@ export function sqliteStatementAll(
       parameters,
     },
   });
+  return (res as MResponseWithData<unknown[]>).data;
 }
 
-export function sqliteStatementRun(
+export async function sqliteStatementRun(
   dbKey: number,
   stmtKey: number,
   parameters: ReadonlyArray<unknown>,
-): Promise<
-  MResponseWithData<{
-    changes: number | bigint;
-    lastInsertRowid: number | bigint;
-  }>
-> {
-  return jsBridge.callNative({
+): Promise<{
+  changes: number | bigint;
+  lastInsertRowid: number | bigint;
+}> {
+  const res = await jsBridge.callNative({
     api: "sqliteStatementRun",
     data: {
       dbKey,
@@ -67,23 +66,27 @@ export function sqliteStatementRun(
       parameters,
     },
   });
+  return (
+    res as MResponseWithData<{
+      changes: number | bigint;
+      lastInsertRowid: number | bigint;
+    }>
+  ).data;
 }
 
-export function sqliteExecute(
+export async function sqliteExecute(
   dbKey: number,
   sql: string,
   parameters: ReadonlyArray<unknown>,
-): Promise<
-  MResponseWithData<{
-    reader: boolean;
-    runRes?: {
-      changes: number | bigint;
-      lastInsertRowid: number | bigint;
-    };
-    entityData?: unknown[];
-  }>
-> {
-  return jsBridge.callNative({
+): Promise<{
+  reader: boolean;
+  runRes?: {
+    changes: number | bigint;
+    lastInsertRowid: number | bigint;
+  };
+  entityData?: unknown[];
+}> {
+  const res = await jsBridge.callNative({
     api: "sqliteExecute",
     data: {
       dbKey,
@@ -91,14 +94,24 @@ export function sqliteExecute(
       parameters,
     },
   });
+  return (
+    res as MResponseWithData<{
+      reader: boolean;
+      runRes?: {
+        changes: number | bigint;
+        lastInsertRowid: number | bigint;
+      };
+      entityData?: unknown[];
+    }>
+  ).data;
 }
 
-export function sqliteCreateIterator(
+export async function sqliteCreateIterator(
   dbKey: number,
   stmtKey: number,
   parameters: ReadonlyArray<unknown>,
-): Promise<MResponse> {
-  return jsBridge.callNative({
+): Promise<void> {
+  await jsBridge.callNative({
     api: "sqliteCreateIterator",
     data: {
       dbKey,
@@ -108,24 +121,25 @@ export function sqliteCreateIterator(
   });
 }
 
-export function sqliteIteratorNext(
+export async function sqliteIteratorNext(
   dbKey: number,
   stmtKey: number,
-): Promise<MResponseWithData<unknown | undefined>> {
-  return jsBridge.callNative({
+): Promise<unknown | undefined> {
+  const res = await jsBridge.callNative({
     api: "sqliteIteratorNext",
     data: {
       dbKey,
       stmtKey,
     },
   });
+  return (res as MResponseWithData<unknown | undefined>).data;
 }
 
-export function sqliteIteratorRelease(
+export async function sqliteIteratorRelease(
   dbKey: number,
   stmtKey: number,
-): Promise<MResponse> {
-  return jsBridge.callNative({
+): Promise<void> {
+  await jsBridge.callNative({
     api: "sqliteIteratorRelease",
     data: {
       dbKey,

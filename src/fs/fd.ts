@@ -1,7 +1,8 @@
 import jsBridge from "../bridge";
 import { MResponseWithData } from "../types";
 import { FileStats } from "../types/filestats";
-import { arrayBufferToBase64, base64SetToArrayBuffer } from "../utils/utils";
+import { uint8ArrayToBase64, base64WriteToUint8Array } from "../utils/utils";
+import { enrichStats } from "./common";
 
 export enum OpenFlags {
   O_RDONLY = 0,
@@ -62,30 +63,7 @@ export async function fstat(fd: number) {
     },
   }) as MResponseWithData<FileStats>;
 
-  const file = res.data;
-
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-
-  const S_IFDIR = 0o040000;
-  const S_IFREG = 0o100000;
-  const S_IFLNK = 0o120000;
-
-  file.isDirectory = function () {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-
-  file.isFile = function () {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-
-  file.isSymbolicLink = function () {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-
-  return file;
+  return enrichStats(res.data);
 }
 
 export function fstatSync(fd: number) {
@@ -96,33 +74,10 @@ export function fstatSync(fd: number) {
     },
   }) as MResponseWithData<FileStats>;
 
-  const file = res.data;
-
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-
-  const S_IFDIR = 0o040000;
-  const S_IFREG = 0o100000;
-  const S_IFLNK = 0o120000;
-
-  file.isDirectory = function () {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-
-  file.isFile = function () {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-
-  file.isSymbolicLink = function () {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-
-  return file;
+  return enrichStats(res.data);
 }
 
-export async function ftruncate(fd: number, length: number) {
+export async function ftruncate(fd: number, length: number = 0) {
   await jsBridge.callNative({
     api: "fsFtruncate",
     data: {
@@ -132,7 +87,7 @@ export async function ftruncate(fd: number, length: number) {
   })
 }
 
-export function ftruncateSync(fd: number, length: number) {
+export function ftruncateSync(fd: number, length: number = 0) {
   jsBridge.callNativeSync({
     api: "fsFtruncateSync",
     data: {
@@ -142,7 +97,7 @@ export function ftruncateSync(fd: number, length: number) {
   })
 }
 
-export async function read(fd: number, buffer: ArrayBuffer, offset: number, length: number, position?: number) {
+export async function read(fd: number, buffer: Uint8Array, offset: number, length: number, position?: number) {
   const res = await jsBridge.callNative({
     api: "fsRead",
     data: {
@@ -151,10 +106,10 @@ export async function read(fd: number, buffer: ArrayBuffer, offset: number, leng
       position,
     }
   }) as MResponseWithData<string>;
-  return base64SetToArrayBuffer(res.data, buffer, offset);
+  return base64WriteToUint8Array(res.data, buffer, offset);
 }
 
-export function readSync(fd: number, buffer: ArrayBuffer, offset: number, length: number, position?: number) {
+export function readSync(fd: number, buffer: Uint8Array, offset: number, length: number, position?: number) {
   const res = jsBridge.callNativeSync({
     api: "fsReadSync",
     data: {
@@ -163,11 +118,11 @@ export function readSync(fd: number, buffer: ArrayBuffer, offset: number, length
       position,
     }
   }) as MResponseWithData<string>;
-  return base64SetToArrayBuffer(res.data, buffer, offset);
+  return base64WriteToUint8Array(res.data, buffer, offset);
 }
 
-export function write(fd: number, buffer: ArrayBuffer, offset: number, length: number, position?: number) {
-  const base64 = arrayBufferToBase64(buffer, offset, length);
+export function write(fd: number, buffer: Uint8Array, offset: number, length: number, position?: number) {
+  const base64 = uint8ArrayToBase64(buffer, offset, length);
 
   return jsBridge.callNative({
     api: "fsWrite",
@@ -179,8 +134,8 @@ export function write(fd: number, buffer: ArrayBuffer, offset: number, length: n
   }).then(res => (res as MResponseWithData<number>).data);
 }
 
-export function writeSync(fd: number, buffer: ArrayBuffer, offset: number, length: number, position?: number) {
-  const base64 = arrayBufferToBase64(buffer, offset, length);
+export function writeSync(fd: number, buffer: Uint8Array, offset: number, length: number, position?: number) {
+  const base64 = uint8ArrayToBase64(buffer, offset, length);
 
   return (jsBridge.callNativeSync({
     api: "fsWriteSync",

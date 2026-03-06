@@ -2,7 +2,6 @@ import jsBridge from "../bridge";
 import {
   AlertConfig,
   DateAndTimePickerConfig,
-  MResponse,
   MResponseWithData,
   MultipleColumnsPickerConfig,
   ShowAlertData,
@@ -12,8 +11,8 @@ import {
 
 // navigation bar
 
-export function setNavigationBarTitle(title: string): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function setNavigationBarTitle(title: string): Promise<void> {
+  await jsBridge.callNative({
     api: "setNavigationBarTitle",
     data: {
       title,
@@ -21,11 +20,11 @@ export function setNavigationBarTitle(title: string): Promise<MResponse> {
   });
 }
 
-export function setNavigationBarColor(config: {
+export async function setNavigationBarColor(config: {
   foregroundColor: string;
   backgroundColor: string;
-}): Promise<MResponse> {
-  return jsBridge.callNative({
+}): Promise<void> {
+  await jsBridge.callNative({
     api: "setNavigationBarColor",
     data: config,
   });
@@ -33,14 +32,14 @@ export function setNavigationBarColor(config: {
 
 // pulldown refresh
 
-export function enablePullDownRefresh(): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function enablePullDownRefresh(): Promise<void> {
+  await jsBridge.callNative({
     api: "enablePullDownRefresh",
   });
 }
 
-export function disablePullDownRefresh(): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function disablePullDownRefresh(): Promise<void> {
+  await jsBridge.callNative({
     api: "disablePullDownRefresh",
   });
 }
@@ -49,56 +48,55 @@ export function onPullDownRefresh(callback: (e: Event) => any) {
   window.addEventListener("pulldownrefresh", callback);
 }
 
-export function startPullDownRefresh(): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function startPullDownRefresh(): Promise<void> {
+  await jsBridge.callNative({
     api: "startPullDownRefresh",
   });
 }
 
-export function stopPullDownRefresh(): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function stopPullDownRefresh(): Promise<void> {
+  await jsBridge.callNative({
     api: "stopPullDownRefresh",
   });
 }
 
 // HUD
 
-export function showHUD(req: ShowHUDRequest): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function showHUD(req: ShowHUDRequest): Promise<void> {
+  await jsBridge.callNative({
     api: "showHUD",
     data: req,
   });
 }
 
-export function hideHUD(): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function hideHUD(): Promise<void> {
+  await jsBridge.callNative({
     api: "hideHUD",
   });
 }
 
 // alert
-export function showAlert(
-  config: AlertConfig,
-): Promise<MResponseWithData<ShowAlertData>> {
-  return jsBridge.callNative({
+export async function showAlert(config: AlertConfig): Promise<ShowAlertData> {
+  const res = await jsBridge.callNative({
     api: "showAlert",
     data: config,
   });
+  return (res as MResponseWithData<ShowAlertData>).data;
 }
 
 // media
-export function previewImage(
+export async function previewImage(
   url: string,
   options?: {
     sourceImage?: HTMLImageElement;
   },
-): Promise<MResponse> {
+): Promise<void> {
   const img = options?.sourceImage;
   const rect = options?.sourceImage?.getBoundingClientRect();
   if (img != null) {
     window.__minipPreviewElement = img;
   }
-  return jsBridge.callNative({
+  await jsBridge.callNative({
     api: "previewImage",
     data: {
       url,
@@ -107,8 +105,8 @@ export function previewImage(
   });
 }
 
-export function previewVideo(url: string): Promise<MResponse> {
-  return jsBridge.callNative({
+export async function previewVideo(url: string): Promise<void> {
+  await jsBridge.callNative({
     api: "previewVideo",
     data: {
       url,
@@ -120,43 +118,43 @@ export function previewVideo(url: string): Promise<MResponse> {
 export function showPicker(
   type: "singleColumn",
   data: SingleColumnPickerConfig,
-): Promise<MResponseWithData<number | null | undefined>>;
+): Promise<number | null | undefined>;
 export function showPicker(
   type: "multipleColumns",
   data: MultipleColumnsPickerConfig,
-): Promise<MResponseWithData<number[] | null | undefined>>;
+): Promise<number[] | null | undefined>;
 export function showPicker(
   type: "date" | "time",
   data: DateAndTimePickerConfig,
-): Promise<MResponseWithData<string | null | undefined>>;
+): Promise<string | null | undefined>;
 
-export function showPicker(
+export async function showPicker(
   type: "singleColumn" | "multipleColumns" | "date" | "time",
   data:
     | SingleColumnPickerConfig
     | MultipleColumnsPickerConfig
     | DateAndTimePickerConfig,
-): Promise<MResponseWithData<number | number[] | string | null | undefined>> {
-  let res;
+): Promise<number | number[] | string | null | undefined> {
+  let callData;
   if (
     (type === "time" || type === "date") &&
     !(data as DateAndTimePickerConfig).dateFormat
   ) {
-    res = jsBridge.callNative({
-      api: "showPicker",
+    callData = {
+      type,
       data: {
-        type,
-        data: {
-          ...data,
-          dateFormat: type === "date" ? "yyyy-MM-dd" : "HH:mm:ss",
-        },
+        ...data,
+        dateFormat: type === "date" ? "yyyy-MM-dd" : "HH:mm:ss",
       },
-    });
+    };
   } else {
-    res = jsBridge.callNative({
-      api: "showPicker",
-      data: { type, data },
-    });
+    callData = { type, data };
   }
-  return res;
+  const res = await jsBridge.callNative({
+    api: "showPicker",
+    data: callData,
+  });
+  return (
+    res as MResponseWithData<number | number[] | string | null | undefined>
+  ).data;
 }

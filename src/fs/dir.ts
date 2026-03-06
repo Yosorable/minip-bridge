@@ -1,7 +1,7 @@
 import jsBridge from "../bridge";
 import { MResponseWithData } from "../types";
 
-export async function mkdir(path: string, recursive: boolean = true) {
+export async function mkdir(path: string, recursive: boolean = false) {
   await jsBridge.callNative({
     api: "fsMkdir",
     data: {
@@ -11,7 +11,7 @@ export async function mkdir(path: string, recursive: boolean = true) {
   })
 }
 
-export function mkdirSync(path: string, recursive: boolean = true) {
+export function mkdirSync(path: string, recursive: boolean = false) {
   jsBridge.callNativeSync({
     api: "fsMkdirSync",
     data: {
@@ -21,9 +21,9 @@ export function mkdirSync(path: string, recursive: boolean = true) {
   })
 }
 
-export function readDir(path: string): Promise<string[]> {
+export function readdir(path: string): Promise<string[]> {
   return jsBridge.callNative({
-    api: "fsReadDir",
+    api: "fsReaddir",
     data: {
       path
     }
@@ -31,9 +31,9 @@ export function readDir(path: string): Promise<string[]> {
     .then(res => res.data)
 }
 
-export function readDirSync(path: string): string[] {
+export function readdirSync(path: string): string[] {
   const res = jsBridge.callNativeSync({
-    api: "fsReadDirSync",
+    api: "fsReaddirSync",
     data: {
       path
     }
@@ -41,22 +41,22 @@ export function readDirSync(path: string): string[] {
   return res.data
 }
 
-export async function rmdir(path: string, force?: boolean) {
+export async function rmdir(path: string, recursive?: boolean) {
   await jsBridge.callNative({
     api: "fsRmdir",
     data: {
       path,
-      force
+      recursive
     }
   })
 }
 
-export function rmdirSync(path: string, force?: boolean) {
+export function rmdirSync(path: string, recursive?: boolean) {
   jsBridge.callNativeSync({
     api: "fsRmdirSync",
     data: {
       path,
-      force
+      recursive
     }
   })
 }

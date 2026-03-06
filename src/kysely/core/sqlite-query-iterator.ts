@@ -27,8 +27,8 @@ export class MinipSQLiteQueryIterator
       await sqliteCreateIterator(this.dbKey, this.stmtKey, this.parameters);
       this.created = true;
     }
-    const res = await sqliteIteratorNext(this.dbKey, this.stmtKey);
-    if (res.hasData()) return { value: res.data, done: false };
+    const data = await sqliteIteratorNext(this.dbKey, this.stmtKey);
+    if (data !== undefined && data !== null) return { value: data, done: false };
     return { value: undefined, done: true };
   }
 

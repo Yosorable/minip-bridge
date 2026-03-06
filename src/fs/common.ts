@@ -2,6 +2,30 @@ import jsBridge from "../bridge";
 import { MResponseWithData } from "../types";
 import { FileStats } from "../types/filestats";
 
+const S_IFMT = 0o170000;
+const S_IFDIR = 0o040000;
+const S_IFREG = 0o100000;
+const S_IFLNK = 0o120000;
+
+export function enrichStats(file: FileStats): FileStats {
+  file.atime = new Date(file.atimeMs);
+  file.mtime = new Date(file.mtimeMs);
+  file.ctime = new Date(file.ctimeMs);
+  file.birthtime = new Date(file.birthtimeMs);
+
+  file.isDirectory = function () {
+    return (this.mode & S_IFMT) === S_IFDIR;
+  };
+  file.isFile = function () {
+    return (this.mode & S_IFMT) === S_IFREG;
+  };
+  file.isSymbolicLink = function () {
+    return (this.mode & S_IFMT) === S_IFLNK;
+  };
+
+  return file;
+}
+
 export async function access(path: string, mode?: number): Promise<void> {
   return jsBridge
     .callNative({
@@ -29,6 +53,15 @@ export function accessSync(path: string, mode?: number) {
   }) as MResponseWithData<boolean>;
   if (!res.hasData() || !res.data) {
     throw new Error(res.msg ?? "cannot access this file or directory");
+  }
+}
+
+export function existsSync(path: string): boolean {
+  try {
+    accessSync(path);
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -78,30 +111,7 @@ export async function stat(path: string) {
     },
   })) as MResponseWithData<FileStats>;
 
-  const file = res.data;
-
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-
-  const S_IFDIR = 0o040000;
-  const S_IFREG = 0o100000;
-  const S_IFLNK = 0o120000;
-
-  file.isDirectory = function () {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-
-  file.isFile = function () {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-
-  file.isSymbolicLink = function () {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-
-  return file;
+  return enrichStats(res.data);
 }
 
 export function statSync(path: string) {
@@ -112,30 +122,7 @@ export function statSync(path: string) {
     },
   }) as MResponseWithData<FileStats>;
 
-  const file = res.data;
-
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-
-  const S_IFDIR = 0o040000;
-  const S_IFREG = 0o100000;
-  const S_IFLNK = 0o120000;
-
-  file.isDirectory = function () {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-
-  file.isFile = function () {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-
-  file.isSymbolicLink = function () {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-
-  return file;
+  return enrichStats(res.data);
 }
 
 export async function rm(path: string) {

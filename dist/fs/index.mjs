@@ -3,6 +3,26 @@ import {
 } from "../chunk-GXHJCCLG.mjs";
 
 // src/fs/common.ts
+var S_IFMT = 61440;
+var S_IFDIR = 16384;
+var S_IFREG = 32768;
+var S_IFLNK = 40960;
+function enrichStats(file) {
+  file.atime = new Date(file.atimeMs);
+  file.mtime = new Date(file.mtimeMs);
+  file.ctime = new Date(file.ctimeMs);
+  file.birthtime = new Date(file.birthtimeMs);
+  file.isDirectory = function() {
+    return (this.mode & S_IFMT) === S_IFDIR;
+  };
+  file.isFile = function() {
+    return (this.mode & S_IFMT) === S_IFREG;
+  };
+  file.isSymbolicLink = function() {
+    return (this.mode & S_IFMT) === S_IFLNK;
+  };
+  return file;
+}
 async function access(path, mode) {
   return bridge_default.callNative({
     api: "fsAccess",
@@ -27,6 +47,14 @@ function accessSync(path, mode) {
   });
   if (!res.hasData() || !res.data) {
     throw new Error(res.msg ?? "cannot access this file or directory");
+  }
+}
+function existsSync(path) {
+  try {
+    accessSync(path);
+    return true;
+  } catch {
+    return false;
   }
 }
 async function unlink(path) {
@@ -70,24 +98,7 @@ async function stat(path) {
       path
     }
   });
-  const file = res.data;
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-  const S_IFDIR = 16384;
-  const S_IFREG = 32768;
-  const S_IFLNK = 40960;
-  file.isDirectory = function() {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-  file.isFile = function() {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-  file.isSymbolicLink = function() {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-  return file;
+  return enrichStats(res.data);
 }
 function statSync(path) {
   const res = bridge_default.callNativeSync({
@@ -96,24 +107,7 @@ function statSync(path) {
       path
     }
   });
-  const file = res.data;
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-  const S_IFDIR = 16384;
-  const S_IFREG = 32768;
-  const S_IFLNK = 40960;
-  file.isDirectory = function() {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-  file.isFile = function() {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-  file.isSymbolicLink = function() {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-  return file;
+  return enrichStats(res.data);
 }
 async function rm(path) {
   await bridge_default.callNative({
@@ -153,7 +147,7 @@ function cpSync(src, dest, recursive) {
 }
 
 // src/fs/dir.ts
-async function mkdir(path, recursive = true) {
+async function mkdir(path, recursive = false) {
   await bridge_default.callNative({
     api: "fsMkdir",
     data: {
@@ -162,7 +156,7 @@ async function mkdir(path, recursive = true) {
     }
   });
 }
-function mkdirSync(path, recursive = true) {
+function mkdirSync(path, recursive = false) {
   bridge_default.callNativeSync({
     api: "fsMkdirSync",
     data: {
@@ -171,160 +165,131 @@ function mkdirSync(path, recursive = true) {
     }
   });
 }
-function readDir(path) {
+function readdir(path) {
   return bridge_default.callNative({
-    api: "fsReadDir",
+    api: "fsReaddir",
     data: {
       path
     }
   }).then((res) => res).then((res) => res.data);
 }
-function readDirSync(path) {
+function readdirSync(path) {
   const res = bridge_default.callNativeSync({
-    api: "fsReadDirSync",
+    api: "fsReaddirSync",
     data: {
       path
     }
   });
   return res.data;
 }
-async function rmdir(path, force) {
+async function rmdir(path, recursive) {
   await bridge_default.callNative({
     api: "fsRmdir",
     data: {
       path,
-      force
+      recursive
     }
   });
 }
-function rmdirSync(path, force) {
+function rmdirSync(path, recursive) {
   bridge_default.callNativeSync({
     api: "fsRmdirSync",
     data: {
       path,
-      force
+      recursive
     }
   });
 }
 
 // src/utils/utils.ts
-function arrayBufferToBase64(buffer, offset = 0, length = 0) {
+function uint8ArrayToBase64(data, offset = 0, length = 0) {
   if (length === 0) {
-    length = buffer.byteLength;
+    length = data.byteLength;
   }
-  const arrayBuffer = offset === 0 && length === buffer.byteLength ? buffer : buffer.slice(offset, offset + length);
+  const slice = offset === 0 && length === data.byteLength ? data : data.subarray(offset, offset + length);
   let binary = "";
-  const bytes = new Uint8Array(arrayBuffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < slice.byteLength; i++) {
+    binary += String.fromCharCode(slice[i]);
   }
   return btoa(binary);
 }
-function base64ToArrayBuffer(base64) {
+function base64ToUint8Array(base64) {
   const binaryString = atob(base64);
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
-  return bytes.buffer;
+  return bytes;
 }
-function base64SetToArrayBuffer(base64, buffer, offset) {
+function base64WriteToUint8Array(base64, buffer, offset) {
   const binaryString = atob(base64);
-  const bytes = new Uint8Array(buffer);
   for (let i = 0; i < binaryString.length; i++) {
-    bytes[offset + i] = binaryString.charCodeAt(i);
+    buffer[offset + i] = binaryString.charCodeAt(i);
   }
   return binaryString.length;
 }
 
 // src/fs/file.ts
-function readFile(path) {
+function readFile(path, encoding) {
   return bridge_default.callNative({
     api: "fsReadFile",
     data: {
       path
     }
-  }).then((res) => res.data).then((res) => base64ToArrayBuffer(res));
+  }).then((res) => res.data).then((res) => {
+    const bytes = base64ToUint8Array(res);
+    return encoding ? new TextDecoder(encoding).decode(bytes) : bytes;
+  });
 }
-function readFileSync(path) {
+function readFileSync(path, encoding) {
   const res = bridge_default.callNativeSync({
     api: "fsReadFileSync",
     data: {
       path
     }
   });
-  return base64ToArrayBuffer(res.data);
+  const bytes = base64ToUint8Array(res.data);
+  return encoding ? new TextDecoder(encoding).decode(bytes) : bytes;
+}
+function toBase64(data) {
+  if (data instanceof Uint8Array) {
+    return uint8ArrayToBase64(data);
+  }
+  return uint8ArrayToBase64(new TextEncoder().encode(data));
 }
 async function writeFile(path, data) {
-  let base64 = "";
-  if (data instanceof ArrayBuffer) {
-    base64 = arrayBufferToBase64(data);
-  } else {
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode(data);
-    const arrayBuffer = uint8Array.buffer;
-    base64 = arrayBufferToBase64(arrayBuffer);
-  }
   await bridge_default.callNative({
     api: "fsWriteFile",
     data: {
       path,
-      data: base64
+      data: toBase64(data)
     }
   });
 }
 function writeFileSync(path, data) {
-  let base64 = "";
-  if (data instanceof ArrayBuffer) {
-    base64 = arrayBufferToBase64(data);
-  } else {
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode(data);
-    const arrayBuffer = uint8Array.buffer;
-    base64 = arrayBufferToBase64(arrayBuffer);
-  }
   bridge_default.callNativeSync({
     api: "fsWriteFileSync",
     data: {
       path,
-      data: base64
+      data: toBase64(data)
     }
   });
 }
 async function appendFile(path, data) {
-  let base64 = "";
-  if (data instanceof ArrayBuffer) {
-    base64 = arrayBufferToBase64(data);
-  } else {
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode(data);
-    const arrayBuffer = uint8Array.buffer;
-    base64 = arrayBufferToBase64(arrayBuffer);
-  }
   await bridge_default.callNative({
     api: "fsAppendFile",
     data: {
       path,
-      data: base64
+      data: toBase64(data)
     }
   });
 }
 function appendFileSync(path, data) {
-  let base64 = "";
-  if (data instanceof ArrayBuffer) {
-    base64 = arrayBufferToBase64(data);
-  } else {
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode(data);
-    const arrayBuffer = uint8Array.buffer;
-    base64 = arrayBufferToBase64(arrayBuffer);
-  }
   bridge_default.callNativeSync({
     api: "fsAppendFileSync",
     data: {
       path,
-      data: base64
+      data: toBase64(data)
     }
   });
 }
@@ -346,7 +311,7 @@ function copyFileSync(src, dest) {
     }
   });
 }
-async function truncate(path, length) {
+async function truncate(path, length = 0) {
   await bridge_default.callNative({
     api: "fsTruncate",
     data: {
@@ -355,7 +320,7 @@ async function truncate(path, length) {
     }
   });
 }
-function truncateSync(path, length) {
+function truncateSync(path, length = 0) {
   bridge_default.callNativeSync({
     api: "fsTruncateSync",
     data: {
@@ -420,24 +385,7 @@ async function fstat(fd) {
       fd
     }
   });
-  const file = res.data;
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-  const S_IFDIR = 16384;
-  const S_IFREG = 32768;
-  const S_IFLNK = 40960;
-  file.isDirectory = function() {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-  file.isFile = function() {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-  file.isSymbolicLink = function() {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-  return file;
+  return enrichStats(res.data);
 }
 function fstatSync(fd) {
   const res = bridge_default.callNativeSync({
@@ -446,26 +394,9 @@ function fstatSync(fd) {
       fd
     }
   });
-  const file = res.data;
-  file.atime = new Date(file.atimeMs);
-  file.mtime = new Date(file.mtimeMs);
-  file.ctime = new Date(file.ctimeMs);
-  file.birthtime = new Date(file.birthtimeMs);
-  const S_IFDIR = 16384;
-  const S_IFREG = 32768;
-  const S_IFLNK = 40960;
-  file.isDirectory = function() {
-    return (this.mode & S_IFDIR) === S_IFDIR;
-  };
-  file.isFile = function() {
-    return (this.mode & S_IFREG) === S_IFREG;
-  };
-  file.isSymbolicLink = function() {
-    return (this.mode & S_IFLNK) === S_IFLNK;
-  };
-  return file;
+  return enrichStats(res.data);
 }
-async function ftruncate(fd, length) {
+async function ftruncate(fd, length = 0) {
   await bridge_default.callNative({
     api: "fsFtruncate",
     data: {
@@ -474,7 +405,7 @@ async function ftruncate(fd, length) {
     }
   });
 }
-function ftruncateSync(fd, length) {
+function ftruncateSync(fd, length = 0) {
   bridge_default.callNativeSync({
     api: "fsFtruncateSync",
     data: {
@@ -492,7 +423,7 @@ async function read(fd, buffer, offset, length, position) {
       position
     }
   });
-  return base64SetToArrayBuffer(res.data, buffer, offset);
+  return base64WriteToUint8Array(res.data, buffer, offset);
 }
 function readSync(fd, buffer, offset, length, position) {
   const res = bridge_default.callNativeSync({
@@ -503,10 +434,10 @@ function readSync(fd, buffer, offset, length, position) {
       position
     }
   });
-  return base64SetToArrayBuffer(res.data, buffer, offset);
+  return base64WriteToUint8Array(res.data, buffer, offset);
 }
 function write(fd, buffer, offset, length, position) {
-  const base64 = arrayBufferToBase64(buffer, offset, length);
+  const base64 = uint8ArrayToBase64(buffer, offset, length);
   return bridge_default.callNative({
     api: "fsWrite",
     data: {
@@ -517,7 +448,7 @@ function write(fd, buffer, offset, length, position) {
   }).then((res) => res.data);
 }
 function writeSync(fd, buffer, offset, length, position) {
-  const base64 = arrayBufferToBase64(buffer, offset, length);
+  const base64 = uint8ArrayToBase64(buffer, offset, length);
   return bridge_default.callNativeSync({
     api: "fsWriteSync",
     data: {
@@ -539,6 +470,8 @@ export {
   copyFileSync,
   cp,
   cpSync,
+  enrichStats,
+  existsSync,
   fstat,
   fstatSync,
   ftruncate,
@@ -548,11 +481,11 @@ export {
   open,
   openSync,
   read,
-  readDir,
-  readDirSync,
   readFile,
   readFileSync,
   readSync,
+  readdir,
+  readdirSync,
   rename,
   renameSync,
   rm,

@@ -150,93 +150,91 @@ interface SafeAreaInfo {
 declare function navigateTo(data: {
     page: string;
     title?: string;
-}): Promise<MResponse>;
-declare function navigateBack(delta?: number): Promise<MResponse>;
+}): Promise<void>;
+declare function navigateBack(delta?: number): Promise<void>;
 declare function redirectTo(data: {
     page: string;
     title?: string;
-}): Promise<MResponse>;
-declare function openWebsite(url: string): Promise<MResponse>;
-declare function openSettings(): Promise<MResponse>;
+}): Promise<void>;
+declare function openWebsite(url: string): Promise<void>;
+declare function openSettings(): Promise<void>;
 
-declare function closeApp(): Promise<MResponse>;
-declare function showAppDetail(): Promise<MResponse>;
-declare function installApp(url: string): Promise<MResponse>;
-declare function getInstalledAppList(): Promise<MResponseWithData<AppInfo[]>>;
-declare function getAppInfo(): Promise<MResponseWithData<AppInfo>>;
-declare function updateCurrentApp(url: string): Promise<MResponse>;
+declare function closeApp(): Promise<void>;
+declare function showAppDetail(): Promise<void>;
+declare function installApp(url: string): Promise<void>;
+declare function getInstalledAppList(): Promise<AppInfo[]>;
+declare function getAppInfo(): Promise<AppInfo>;
+declare function updateCurrentApp(url: string): Promise<void>;
 
-declare function setNavigationBarTitle(title: string): Promise<MResponse>;
+declare function setNavigationBarTitle(title: string): Promise<void>;
 declare function setNavigationBarColor(config: {
     foregroundColor: string;
     backgroundColor: string;
-}): Promise<MResponse>;
-declare function enablePullDownRefresh(): Promise<MResponse>;
-declare function disablePullDownRefresh(): Promise<MResponse>;
+}): Promise<void>;
+declare function enablePullDownRefresh(): Promise<void>;
+declare function disablePullDownRefresh(): Promise<void>;
 declare function onPullDownRefresh(callback: (e: Event) => any): void;
-declare function startPullDownRefresh(): Promise<MResponse>;
-declare function stopPullDownRefresh(): Promise<MResponse>;
-declare function showHUD(req: ShowHUDRequest): Promise<MResponse>;
-declare function hideHUD(): Promise<MResponse>;
-declare function showAlert(config: AlertConfig): Promise<MResponseWithData<ShowAlertData>>;
+declare function startPullDownRefresh(): Promise<void>;
+declare function stopPullDownRefresh(): Promise<void>;
+declare function showHUD(req: ShowHUDRequest): Promise<void>;
+declare function hideHUD(): Promise<void>;
+declare function showAlert(config: AlertConfig): Promise<ShowAlertData>;
 declare function previewImage(url: string, options?: {
     sourceImage?: HTMLImageElement;
-}): Promise<MResponse>;
-declare function previewVideo(url: string): Promise<MResponse>;
-declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<MResponseWithData<number | null | undefined>>;
-declare function showPicker(type: "multipleColumns", data: MultipleColumnsPickerConfig): Promise<MResponseWithData<number[] | null | undefined>>;
-declare function showPicker(type: "date" | "time", data: DateAndTimePickerConfig): Promise<MResponseWithData<string | null | undefined>>;
+}): Promise<void>;
+declare function previewVideo(url: string): Promise<void>;
+declare function showPicker(type: "singleColumn", data: SingleColumnPickerConfig): Promise<number | null | undefined>;
+declare function showPicker(type: "multipleColumns", data: MultipleColumnsPickerConfig): Promise<number[] | null | undefined>;
+declare function showPicker(type: "date" | "time", data: DateAndTimePickerConfig): Promise<string | null | undefined>;
 
-declare function getKVStorage(key: string): Promise<MResponseWithData<string>>;
-declare function setKVStorage(key: string, value: string): Promise<MResponse>;
-declare function deleteKVStorage(key: string): Promise<MResponse>;
-declare function clearKVStorage(): Promise<MResponse>;
-declare function getKVStorageSync(key: string): MResponseWithData<string>;
-declare function setKVStorageSync(key: string, value: string): MResponse;
-declare function deleteKVStorageSync(key: string): MResponse;
-declare function clearKVStorageSync(): MResponse;
+declare function getKVStorage(key: string): Promise<string>;
+declare function setKVStorage(key: string, value: string): Promise<void>;
+declare function deleteKVStorage(key: string): Promise<void>;
+declare function clearKVStorage(): Promise<void>;
+declare function getKVStorageSync(key: string): string;
+declare function setKVStorageSync(key: string, value: string): void;
+declare function deleteKVStorageSync(key: string): void;
+declare function clearKVStorageSync(): void;
 
 /**
  *
  * @param type medium as default
  */
-declare function vibrate(type?: "light" | "medium" | "heavy"): Promise<MResponse>;
-declare function getClipboardData(): Promise<MResponseWithData<string>>;
-declare function setClipboardData(data: string): Promise<MResponseWithData<string>>;
-declare function scanQRCode(): Promise<MResponseWithData<string | undefined | null>>;
-declare function getDeviceInfo(): Promise<MResponseWithData<DeviceInfo>>;
-declare function getDeviceInfoSync(): MResponseWithData<DeviceInfo>;
+declare function vibrate(type?: "light" | "medium" | "heavy"): Promise<void>;
+declare function getClipboardData(): Promise<string>;
+declare function setClipboardData(data: string): Promise<void>;
+declare function scanQRCode(): Promise<string | undefined | null>;
+declare function getDeviceInfo(): Promise<DeviceInfo>;
+declare function getDeviceInfoSync(): DeviceInfo;
 
-declare function sqliteOpenDB(path: string): Promise<MResponseWithData<{
-    dbKey: number;
-}>>;
-declare function sqliteCloseDB(dbKey: number): Promise<MResponse>;
-declare function sqlitePrepare(dbKey: number, sql: string): Promise<MResponseWithData<{
+declare function sqliteOpenDB(path: string): Promise<number>;
+declare function sqliteCloseDB(dbKey: number): Promise<void>;
+declare function sqlitePrepare(dbKey: number, sql: string): Promise<{
     stmtKey: number;
     reader: boolean;
-}>>;
-declare function sqliteStatementAll(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<MResponseWithData<unknown[]>>;
-declare function sqliteStatementRun(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<MResponseWithData<{
+}>;
+declare function sqliteStatementAll(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<unknown[]>;
+declare function sqliteStatementRun(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<{
     changes: number | bigint;
     lastInsertRowid: number | bigint;
-}>>;
-declare function sqliteExecute(dbKey: number, sql: string, parameters: ReadonlyArray<unknown>): Promise<MResponseWithData<{
+}>;
+declare function sqliteExecute(dbKey: number, sql: string, parameters: ReadonlyArray<unknown>): Promise<{
     reader: boolean;
     runRes?: {
         changes: number | bigint;
         lastInsertRowid: number | bigint;
     };
     entityData?: unknown[];
-}>>;
-declare function sqliteCreateIterator(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<MResponse>;
-declare function sqliteIteratorNext(dbKey: number, stmtKey: number): Promise<MResponseWithData<unknown | undefined>>;
-declare function sqliteIteratorRelease(dbKey: number, stmtKey: number): Promise<MResponse>;
+}>;
+declare function sqliteCreateIterator(dbKey: number, stmtKey: number, parameters: ReadonlyArray<unknown>): Promise<void>;
+declare function sqliteIteratorNext(dbKey: number, stmtKey: number): Promise<unknown | undefined>;
+declare function sqliteIteratorRelease(dbKey: number, stmtKey: number): Promise<void>;
 
-declare function getMemoryStorage(key: string): Promise<MResponseWithData<string>>;
-declare function setMemoryStorage(key: string, value: string): Promise<MResponse>;
-declare function setMemoryStorageIfNotExist(key: string, value: string): Promise<MResponseWithData<boolean>>;
-declare function removeMemoryStorage(key: string): Promise<MResponse>;
-declare function clearMemoryStorage(): Promise<MResponse>;
+declare function getMemoryStorage(key: string): Promise<string>;
+declare function setMemoryStorage(key: string, value: string): Promise<void>;
+declare function setMemoryStorageIfNotExist(key: string, value: string): Promise<boolean>;
+declare function removeMemoryStorage(key: string): Promise<void>;
+declare function clearMemoryStorage(): Promise<void>;
 
 interface WebKitCallable {
     postMessage: (data: string) => Promise<string>;

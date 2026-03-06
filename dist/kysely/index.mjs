@@ -1,13 +1,12 @@
 import {
   sqliteCloseDB,
   sqliteCreateIterator,
+  sqliteExecute,
   sqliteIteratorNext,
   sqliteIteratorRelease,
   sqliteOpenDB,
-  sqlitePrepare,
-  sqliteStatementAll,
-  sqliteStatementRun
-} from "../chunk-QWZNCALB.mjs";
+  sqlitePrepare
+} from "../chunk-4HUUDNXW.mjs";
 import "../chunk-GXHJCCLG.mjs";
 
 // src/kysely/index.ts
@@ -29,8 +28,8 @@ var MinipSQLiteQueryIterator = class {
       await sqliteCreateIterator(this.dbKey, this.stmtKey, this.parameters);
       this.created = true;
     }
-    const res = await sqliteIteratorNext(this.dbKey, this.stmtKey);
-    if (res.hasData()) return { value: res.data, done: false };
+    const data = await sqliteIteratorNext(this.dbKey, this.stmtKey);
+    if (data !== void 0 && data !== null) return { value: data, done: false };
     return { value: void 0, done: true };
   }
   async return() {
@@ -58,27 +57,22 @@ var MinipSqliteDatabase = class {
     if (this.id === -1) return;
     await sqliteCloseDB(this.id);
   }
-  async prepare(sql) {
+  async ensureOpen() {
     if (this.id === -1) {
-      const res = await sqliteOpenDB(this.path);
-      this.id = res.data.dbKey;
+      this.id = await sqliteOpenDB(this.path);
     }
-    const dbKey = this.id;
+    return this.id;
+  }
+  async execute(sql, parameters) {
+    const dbKey = await this.ensureOpen();
+    return sqliteExecute(dbKey, sql, parameters);
+  }
+  async prepare(sql) {
+    const dbKey = await this.ensureOpen();
     const stmtRes = await sqlitePrepare(dbKey, sql);
-    const stmtKey = stmtRes.data.stmtKey;
-    const reader = stmtRes.data.reader;
+    const stmtKey = stmtRes.stmtKey;
     return {
-      reader,
-      all(parameters) {
-        return sqliteStatementAll(dbKey, stmtKey, parameters).then(
-          (res) => res.data
-        );
-      },
-      run(parameters) {
-        return sqliteStatementRun(dbKey, stmtKey, parameters).then(
-          (res) => res.data
-        );
-      },
+      reader: stmtRes.reader,
       iterate(parameters) {
         return new MinipSQLiteQueryIterator(dbKey, stmtKey, parameters);
       }
@@ -112,18 +106,17 @@ var MinipSqliteConnection = class {
     if (this.#db.debug) {
       console.debug(sql, parameters);
     }
-    const stmt = await this.#db.prepare(sql);
-    if (stmt.reader) {
+    const res = await this.#db.execute(sql, parameters);
+    if (res.reader) {
       return {
-        rows: await stmt.all(parameters)
+        rows: res.entityData ?? []
       };
     } else {
-      const { changes, lastInsertRowid } = await stmt.run(parameters);
-      const numAffectedRows = changes !== void 0 && changes !== null ? BigInt(changes) : void 0;
+      const runRes = res.runRes;
+      const numAffectedRows = runRes?.changes !== void 0 && runRes?.changes !== null ? BigInt(runRes.changes) : void 0;
       return {
-        numUpdatedOrDeletedRows: numAffectedRows,
         numAffectedRows,
-        insertId: lastInsertRowid !== void 0 && lastInsertRowid !== null ? BigInt(lastInsertRowid) : void 0,
+        insertId: runRes?.lastInsertRowid !== void 0 && runRes?.lastInsertRowid !== null ? BigInt(runRes.lastInsertRowid) : void 0,
         rows: []
       };
     }

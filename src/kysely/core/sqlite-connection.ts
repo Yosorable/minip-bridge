@@ -17,24 +17,25 @@ export class MinipSqliteConnection implements DatabaseConnection {
     if (this.#db.debug) {
       console.debug(sql, parameters);
     }
-    const stmt = await this.#db.prepare(sql);
+    const res = await this.#db.execute(sql, parameters);
 
-    if (stmt.reader) {
+    if (res.reader) {
       return {
-        rows: (await stmt.all(parameters)) as R[],
+        rows: (res.entityData ?? []) as R[],
       };
     } else {
-      const { changes, lastInsertRowid } = await stmt.run(parameters);
-
+      const runRes = res.runRes;
       const numAffectedRows =
-        changes !== undefined && changes !== null ? BigInt(changes) : undefined;
+        runRes?.changes !== undefined && runRes?.changes !== null
+          ? BigInt(runRes.changes)
+          : undefined;
 
       return {
-        numUpdatedOrDeletedRows: numAffectedRows,
         numAffectedRows,
         insertId:
-          lastInsertRowid !== undefined && lastInsertRowid !== null
-            ? BigInt(lastInsertRowid)
+          runRes?.lastInsertRowid !== undefined &&
+          runRes?.lastInsertRowid !== null
+            ? BigInt(runRes.lastInsertRowid)
             : undefined,
         rows: [],
       };

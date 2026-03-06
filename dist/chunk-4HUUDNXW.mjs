@@ -3,33 +3,35 @@ import {
 } from "./chunk-GXHJCCLG.mjs";
 
 // src/api/sqlite.ts
-function sqliteOpenDB(path) {
-  return bridge_default.callNative({
+async function sqliteOpenDB(path) {
+  const res = await bridge_default.callNative({
     api: "sqliteOpenDB",
     data: {
       path
     }
   });
+  return res.data.dbKey;
 }
-function sqliteCloseDB(dbKey) {
-  return bridge_default.callNative({
+async function sqliteCloseDB(dbKey) {
+  await bridge_default.callNative({
     api: "sqliteCloseDB",
     data: {
       dbKey
     }
   });
 }
-function sqlitePrepare(dbKey, sql) {
-  return bridge_default.callNative({
+async function sqlitePrepare(dbKey, sql) {
+  const res = await bridge_default.callNative({
     api: "sqlitePrepare",
     data: {
       dbKey,
       sql
     }
   });
+  return res.data;
 }
-function sqliteStatementAll(dbKey, stmtKey, parameters) {
-  return bridge_default.callNative({
+async function sqliteStatementAll(dbKey, stmtKey, parameters) {
+  const res = await bridge_default.callNative({
     api: "sqliteStatementAll",
     data: {
       dbKey,
@@ -37,9 +39,10 @@ function sqliteStatementAll(dbKey, stmtKey, parameters) {
       parameters
     }
   });
+  return res.data;
 }
-function sqliteStatementRun(dbKey, stmtKey, parameters) {
-  return bridge_default.callNative({
+async function sqliteStatementRun(dbKey, stmtKey, parameters) {
+  const res = await bridge_default.callNative({
     api: "sqliteStatementRun",
     data: {
       dbKey,
@@ -47,9 +50,10 @@ function sqliteStatementRun(dbKey, stmtKey, parameters) {
       parameters
     }
   });
+  return res.data;
 }
-function sqliteExecute(dbKey, sql, parameters) {
-  return bridge_default.callNative({
+async function sqliteExecute(dbKey, sql, parameters) {
+  const res = await bridge_default.callNative({
     api: "sqliteExecute",
     data: {
       dbKey,
@@ -57,9 +61,10 @@ function sqliteExecute(dbKey, sql, parameters) {
       parameters
     }
   });
+  return res.data;
 }
-function sqliteCreateIterator(dbKey, stmtKey, parameters) {
-  return bridge_default.callNative({
+async function sqliteCreateIterator(dbKey, stmtKey, parameters) {
+  await bridge_default.callNative({
     api: "sqliteCreateIterator",
     data: {
       dbKey,
@@ -68,17 +73,18 @@ function sqliteCreateIterator(dbKey, stmtKey, parameters) {
     }
   });
 }
-function sqliteIteratorNext(dbKey, stmtKey) {
-  return bridge_default.callNative({
+async function sqliteIteratorNext(dbKey, stmtKey) {
+  const res = await bridge_default.callNative({
     api: "sqliteIteratorNext",
     data: {
       dbKey,
       stmtKey
     }
   });
+  return res.data;
 }
-function sqliteIteratorRelease(dbKey, stmtKey) {
-  return bridge_default.callNative({
+async function sqliteIteratorRelease(dbKey, stmtKey) {
+  await bridge_default.callNative({
     api: "sqliteIteratorRelease",
     data: {
       dbKey,
@@ -98,4 +104,4 @@ export {
   sqliteIteratorNext,
   sqliteIteratorRelease
 };
-//# sourceMappingURL=chunk-QWZNCALB.mjs.map
+//# sourceMappingURL=chunk-4HUUDNXW.mjs.map

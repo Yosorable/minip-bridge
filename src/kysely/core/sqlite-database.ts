@@ -1,10 +1,9 @@
 import { MinipSqliteStatement } from "./sqlite-statement";
 import {
   sqliteCloseDB,
+  sqliteExecute,
   sqliteOpenDB,
   sqlitePrepare,
-  sqliteStatementAll,
-  sqliteStatementRun,
 } from "../../api/sqlite";
 import { MinipSQLiteQueryIterator } from "./sqlite-query-iterator";
 
@@ -21,30 +20,24 @@ export class MinipSqliteDatabase {
     if (this.id === -1) return;
     await sqliteCloseDB(this.id);
   }
-  async prepare(sql: string): Promise<MinipSqliteStatement> {
+  private async ensureOpen(): Promise<number> {
     if (this.id === -1) {
-      const res = await sqliteOpenDB(this.path);
-      this.id = res.data.dbKey;
+      this.id = await sqliteOpenDB(this.path);
     }
-
-    const dbKey = this.id;
+    return this.id;
+  }
+  async execute(sql: string, parameters: ReadonlyArray<unknown>) {
+    const dbKey = await this.ensureOpen();
+    return sqliteExecute(dbKey, sql, parameters);
+  }
+  async prepare(sql: string): Promise<MinipSqliteStatement> {
+    const dbKey = await this.ensureOpen();
     const stmtRes = await sqlitePrepare(dbKey, sql);
 
-    const stmtKey = stmtRes.data.stmtKey;
-    const reader = stmtRes.data.reader;
+    const stmtKey = stmtRes.stmtKey;
 
     return {
-      reader: reader,
-      all(parameters) {
-        return sqliteStatementAll(dbKey, stmtKey, parameters).then(
-          (res) => res.data,
-        );
-      },
-      run(parameters) {
-        return sqliteStatementRun(dbKey, stmtKey, parameters).then(
-          (res) => res.data,
-        );
-      },
+      reader: stmtRes.reader,
       iterate(parameters) {
         return new MinipSQLiteQueryIterator(dbKey, stmtKey, parameters);
       },
